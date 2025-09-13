@@ -28,60 +28,46 @@ class Api :
         return f"{self.base_url.rstrip('/')}/{endpoint.lstrip('/')}"
 
     def get(self, endpoint: str = "", payload: dict = {}) -> dict :
-        """
-        Send a GET request to the API.
-
-        Args:
-            payload (dict, optional): Dictionary of query parameters to include in the request.
-
-        Returns:
-            dict: The JSON response from the API.
-
-        Raises:
-            Exception: If the request fails or returns a non-200 status code.
-        """
         url : str = self.build_url(endpoint)
+        
+        headers = {}
+        if self.__bearer_token:
+            headers["Authorization"] = f"Bearer {self.__bearer_token}"
 
         resp: requests.Response = requests.get(
             url=url,
-            data=payload,
+            params=payload,
+            headers=headers,
             timeout=self._TIMEOUT
         )
         
         status_code: int = resp.status_code
-        
-        # This could probably use more explicit error handling
         if status_code != 200 :
-            raise Exception(f"GET request failed with status code {status_code}")
+            raise Exception(f"GET request failed with status code {status_code}: {resp.text}")
 
         return resp.json()
 
     def post(self, endpoint: str = "", payload: dict = {}) -> dict :
-        """
-        Send a POST request to the API.
-
-        Args:
-            payload (dict, optional): Dictionary of data to include in the request body.
-
-        Returns:
-            dict: The JSON response from the API.
-
-        Raises:
-            Exception: If the request fails or returns a non-200 status code.
-        """
         url : str = self.build_url(endpoint)
+        
+        # <-- YOU WERE MISSING THIS SECTION IN post()
+        headers = {}
+        if self.__bearer_token:
+            headers["Authorization"] = f"Bearer {self.__bearer_token}"
+        # -->
 
         resp: requests.Response = requests.post(
             url=url,
             json=payload,
+            headers=headers, # <-- AND YOU WERE MISSING THIS ARGUMENT
             timeout=self._TIMEOUT
         )
         
         status_code: int = resp.status_code
-        
-        # This could probably use more explicit error handling
         if status_code != 200 :
-            raise Exception(f"POST request failed with status code {status_code}")
+            raise Exception(f"POST request failed with status code {status_code}: {resp.text}")
 
         return resp.json()
+
+
 
