@@ -1,4 +1,7 @@
 import requests
+import configparser
+import typing
+from typing import TextIO
 
 class Api :
     """
@@ -23,14 +26,30 @@ class Api :
     def set_bearer_token(self, token: str) :
         self.__bearer_token = token
 
+    def set_bearer_token_from_file(self, filepath: str, section: str = "auth", key: str = "bearer_token") :
+        token: str | None = None
+
+        if filepath.endswith(".ini"):
+            config: configparser.ConfigParser = configparser.ConfigParser()
+            config.read(filepath)
+            if config.has_section(section) and config.has_option(section, key):
+                token = config.get(section, key)
+        else:
+            f: TextIO
+            with open(filepath, "r") as f:
+                token = f.read().strip()
+        if not token:
+            raise ValueError(f"Bearer token not found in file '{filepath}' (section: '{section}', key: '{key}')")
+        self.set_bearer_token(token)
+    
     
     def build_url(self, endpoint: str = "") -> str :
         return f"{self.base_url.rstrip('/')}/{endpoint.lstrip('/')}"
 
-    def get(self, endpoint: str = "", payload: dict = {}) -> dict :
+    def get(self, endpoint: str = "", payload: dict[str, typing.Any] | None = {}) -> dict[str, typing.Any] :
         url : str = self.build_url(endpoint)
         
-        headers = {}
+        headers: dict[str, typing.Any] | None = {}
         if self.__bearer_token:
             headers["Authorization"] = f"Bearer {self.__bearer_token}"
 
