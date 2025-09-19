@@ -2,6 +2,7 @@ from .api import Api
 import typing
 import requests
 import os
+import tempfile
 
 
 class HuggingFaceApi(Api) :
@@ -49,11 +50,11 @@ class HuggingFaceApi(Api) :
         return file_path  
 
 
-    def download_all_files(self, model_id: str, dest_dir: str = None) -> list:
+    def download_all_files(self, model_id: str, dest_dir: str | None = None) -> list[str]:
         files = self.list_model_files(model_id)
-        paths = []
+        paths: list[str] = []
         for file_info in files:
-            filename = file_info.get("rfilename") or file_info.get("filename")
+            filename: str | None = file_info.get("rfilename") or file_info.get("filename")
             if filename:
                 paths.append(self.download_file(model_id, filename, dest_dir))
         return paths
