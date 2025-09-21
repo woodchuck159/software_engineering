@@ -1,0 +1,3 @@
+process_data("Analyze system performance", 1) 1.5
+log_message("User login successful", 1) 0.5
+process_data("Generate weekly report", 1) 2.0

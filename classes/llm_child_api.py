@@ -12,6 +12,7 @@ class GenAiChatApi(Api):
         model (str): The name of the model to use for chat completions.
     """
     CHAT_ENDPOINT = "/api/chat/completions"
+    _TIMEOUT = 10.0
 
     def __init__(self, base_url: str, model: str):
         """
