@@ -3,10 +3,11 @@ import re
 import os
 import importlib
 import shutil
-import hashlib # Used in demo function
+import hashlib
+import time
 
 def load_available_functions(directory: str, script_verbosity: int = 1) -> dict:
-    # This function remains the same as before
+    # This function remains the same.
     functions = {}
     if script_verbosity > 0:
         print(f"🔍 Discovering functions in './{directory}/'...")
@@ -24,19 +25,19 @@ def load_available_functions(directory: str, script_verbosity: int = 1) -> dict:
                     print(f"  - ⚠️  Could not load '{module_name}': {e}")
     return functions
 
-def process_worker(target_func, result_queue, weight, *args):
+def process_worker(target_func, result_queue, weight, func_name, *args):
     """
-    A wrapper function that executes the target, gets its float result,
-    and puts the result and its weight into the shared queue.
+    Wrapper that executes the target and puts its score, time, weight,
+    and name into the shared queue.
     """
-    result = target_func(*args)
-    result_queue.put((float(result), float(weight)))
+    score, time_taken = target_func(*args)
+    result_queue.put((float(score), float(time_taken), float(weight), func_name))
 
 def run_concurrently_from_file(filename: str, available_functions: dict, script_verbosity: int = 1):
     """
-    Parses a file, executes functions concurrently, and calculates a weighted compound score.
+    Parses a file, executes functions, and returns a net score and a
+    dictionary of {function_name: time_taken}.
     """
-    # Regex now captures a function, string arg, int verbosity, and a final float/int weight.
     line_pattern = re.compile(r'(\w+)\("([^"]*)",\s*(\d+)\)\s*([\d.]+)')
     
     processes = []
@@ -50,7 +51,6 @@ def run_concurrently_from_file(filename: str, available_functions: dict, script_
             for i, line in enumerate(f, 1):
                 line = line.strip()
                 if not line: continue
-
                 match = line_pattern.match(line)
                 if match:
                     func_name, argument, verbosity_str, weight_str = match.groups()
@@ -58,87 +58,98 @@ def run_concurrently_from_file(filename: str, available_functions: dict, script_
                         target_func = available_functions[func_name]
                         verbosity_level = int(verbosity_str)
                         weight = float(weight_str)
-
-                        # The target is now our worker, which calls the actual function
+                        # Pass func_name to the worker
                         process = multiprocessing.Process(
                             target=process_worker,
-                            args=(target_func, results_queue, weight, argument, verbosity_level)
+                            args=(target_func, results_queue, weight, func_name, argument, verbosity_level)
                         )
                         processes.append(process)
-                        if script_verbosity > 0:
-                            print(f'  - Queued: {func_name}(...) with weight {weight}')
-                    elif script_verbosity > 0:
-                        print(f"  - ⚠️  Warning: Func '{func_name}' on line {i} not available. Skipping.")
-                elif script_verbosity > 0:
-                    print(f"  - ⚠️  Warning: Could not parse line {i}: '{line}'. Skipping.")
+                        if script_verbosity > 0: print(f'  - Queued: {func_name}(...) with weight {weight}')
+                    elif script_verbosity > 0: print(f"  - ⚠️  Warning: Func '{func_name}' on line {i} not available. Skipping.")
+                elif script_verbosity > 0: print(f"  - ⚠️  Warning: Could not parse line {i}: '{line}'. Skipping.")
     except FileNotFoundError:
         if script_verbosity > 0: print(f"  - 🛑 Error: File '{filename}' not found.")
-        return None, []
+        return 0.0, {}
 
     if not processes:
         if script_verbosity > 0: print("No valid tasks to run.")
-        return 0.0, []
+        return 0.0, {}
 
     # Start all processes
     if script_verbosity > 0: print("\n--- Starting all processes ---")
     for p in processes: p.start()
 
-    # Retrieve results from the queue
+    # Retrieve results and build the score and dictionary
     if script_verbosity > 0: print("--- Collecting results ---")
-    individual_scores = []
-    compound_score = 0.0
+    times_dictionary = {}
+    net_score = 0.0
     for _ in range(len(processes)):
-        score, weight = results_queue.get() # Blocks until a result is available
-        individual_scores.append(score)
-        compound_score += score * weight
+        score, time_taken, weight, func_name = results_queue.get()
+        net_score += score * weight
+        # If a function is called multiple times, this will store the time of the one that finishes last.
+        times_dictionary[func_name] = time_taken
 
-    # Wait for all processes to finish completely
+    # Wait for all processes to finish
     for p in processes: p.join()
 
     if script_verbosity > 0: print("\n--- All processes have completed ---")
-    return compound_score, individual_scores
+    return net_score, times_dictionary
 
 if __name__ == "__main__":
-    # --- 1. SETUP ---
+    # --- 1. SETUP: Create the files and folders for the demo ---
+    # This setup code automatically generates the function files needed to run the demo.
     functions_dir = "functions"
     os.makedirs(functions_dir, exist_ok=True)
     with open(os.path.join(functions_dir, "__init__.py"), "w", encoding="utf-8") as f: pass
     with open(os.path.join(functions_dir, "process_data.py"), "w", encoding="utf-8") as f:
         f.write("import os, time, hashlib\n")
-        f.write("def process_data(data: str, verbosity: int) -> float:\n")
+        f.write("def process_data(data: str, verbosity: int) -> tuple[float, float]:\n")
+        f.write("    start_time = time.perf_counter()\n")
         f.write("    pid = os.getpid()\n")
         f.write("    if verbosity > 0: print(f'🚀 [Process ID: {pid}] Processing data: \\'{data}\\'')\n")
         f.write("    time.sleep(1)\n")
         f.write("    hash_object = hashlib.md5(data.encode())\n")
         f.write("    score = int(hash_object.hexdigest(), 16) % 1000 / 10.0\n")
-        f.write("    if verbosity > 0: print(f'✅ [Process ID: {pid}] Finished processing. Score: {score}')\n")
-        f.write("    return score\n")
+        f.write("    end_time = time.perf_counter()\n")
+        f.write("    time_taken = end_time - start_time\n")
+        f.write("    if verbosity > 0: print(f'✅ [Process ID: {pid}] Finished. Score: {score}, Time: {time_taken:.4f}s')\n")
+        f.write("    return score, time_taken\n")
     with open(os.path.join(functions_dir, "log_message.py"), "w", encoding="utf-8") as f:
         f.write("import os, time\n")
-        f.write("def log_message(message: str, verbosity: int) -> float:\n")
+        f.write("def log_message(message: str, verbosity: int) -> tuple[float, float]:\n")
+        f.write("    start_time = time.perf_counter()\n")
         f.write("    pid = os.getpid()\n")
         f.write("    if verbosity > 0: print(f'📝 [Process ID: {pid}] Logging message: \\'{message}\\'')\n")
         f.write("    time.sleep(0.5)\n")
         f.write("    score = float(len(message))\n")
-        f.write("    if verbosity > 0: print(f'👍 [Process ID: {pid}] Message logged. Score: {score}')\n")
-        f.write("    return score\n")
+        f.write("    end_time = time.perf_counter()\n")
+        f.write("    time_taken = end_time - start_time\n")
+        f.write("    if verbosity > 0: print(f'👍 [Process ID: {pid}] Logged. Score: {score}, Time: {time_taken:.4f}s')\n")
+        f.write("    return score, time_taken\n")
 
     tasks_filename = "tasks.txt"
     with open(tasks_filename, "w", encoding="utf-8") as f:
         f.write('process_data("Analyze system performance", 1) 1.5\n')
         f.write('log_message("User login successful", 1) 0.5\n')
+        # Add a second call to process_data to demonstrate how the dictionary is populated
         f.write('process_data("Generate weekly report", 1) 2.0\n')
 
     # --- 2. EXECUTION ---
     AVAILABLE_FUNCTIONS = load_available_functions(functions_dir)
-    final_score, all_scores = run_concurrently_from_file(tasks_filename, AVAILABLE_FUNCTIONS)
+    net_score, time_dictionary = run_concurrently_from_file(tasks_filename, AVAILABLE_FUNCTIONS)
     
-    print("\n" + "="*40)
-    print("           FINAL RESULTS")
-    print("="*40)
-    print(f"Individual Scores: {all_scores}")
-    print(f"Compound Score:    {final_score:.2f}")
-    print("="*40)
+    print("\n" + "="*50)
+    print(" " * 18 + "FINAL RESULTS")
+    print("="*50)
+    print(f"Net Score:             {net_score:.2f}")
+    print("-" * 50)
+    print("Execution Times by Function:")
+    if time_dictionary:
+        for name, t in time_dictionary.items():
+            print(f"  - {name:<20}: {t:.4f}s")
+    else:
+        print("  - No functions were executed.")
+    print("="*50)
 
     # --- 3. CLEANUP ---
     # os.remove(tasks_filename)
