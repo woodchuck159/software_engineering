@@ -46,6 +46,7 @@ class Api :
     def build_url(self, endpoint: str = "") -> str :
         return f"{self.base_url.rstrip('/')}/{endpoint.lstrip('/')}"
 
+
     def get(self, endpoint: str = "", payload: dict[str, typing.Any] | None = {}) -> typing.Any :
         url : str = self.build_url(endpoint)
         

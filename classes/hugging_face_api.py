@@ -39,7 +39,6 @@ class HuggingFaceApi(Api) :
         endpoint_temp: str | None = self.ENDPOINT.get(endpoint)
         if not endpoint_temp:
             raise ValueError(f"Invalid Endpoint: '{endpoint_temp}' ")
-
         api_endpoint: str = endpoint_temp.format(namespace=self.namespace, repo=self.repo, rev=self.rev, path=path, filename=filename)
         return api_endpoint
 
@@ -92,4 +91,3 @@ class HuggingFaceApi(Api) :
             f.write(content.encode())
 
         return file_path
-
