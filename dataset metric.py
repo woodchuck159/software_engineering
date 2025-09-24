@@ -1,8 +1,12 @@
 import requests
 import time
 
-def dataset_metric(repo_owner, repo_name):
+def dataset_metric(repo_owner, repo_name, verbose):
     
+    if verbose == 1:
+        print(f"[INFO] Starting dataset metric calculation for {repo_owner}/{repo_name}...")
+
+
     #latency timer 
     start = time.time()
 
@@ -14,6 +18,9 @@ def dataset_metric(repo_owner, repo_name):
 
     #Get the readme from the repo
     url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/readme"
+    if verbose == 1:
+        print(f"[INFO] Starting dataset metric calculation for {repo_owner}/{repo_name}...")
+
     r = requests.get(url, headers={"Accept": "application/vnd.github.v3.raw"})
     readme_text = r.text.lower() if r.status_code == 200 else ""
 
@@ -29,10 +36,17 @@ def dataset_metric(repo_owner, repo_name):
 
     has_dataset = any(host in readme_text for host in dataset_hosts) or \
                   any(kw in readme_text for kw in dataset_keywords)
+    
+    if verbose == 1:
+        print(f"[INFO] Dataset mention found: {has_dataset}")
+
 
     #Look for code in the repo anything with .py or .ipyng (should this include non python things?)
     has_code = False
     contents_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/contents"
+    if verbose == 1:
+        print(f"[INFO] Fetching repo contents from: {contents_url}")
+
     rc = requests.get(contents_url, headers=headers)
 
     if rc.status_code == 200:
@@ -53,6 +67,10 @@ def dataset_metric(repo_owner, repo_name):
                         if sub_name.endswith(".py") or sub_name.endswith(".ipynb"):
                             has_code = True
 
+    if verbose == 1:
+        print(f"[INFO] Dataset={has_dataset}, Code={has_code}")
+
+
     #Score based on results (NOT PERFECT)
     if has_dataset and has_code:
         score = 1.0
@@ -62,9 +80,13 @@ def dataset_metric(repo_owner, repo_name):
         score = 0.0
 
     latency_ms = int((time.time() - start) * 1000)
+
+    if verbose == 1:
+        print(f"[INFO] Finished calculation. Score={score}, Latency={latency_ms}ms")
+
     return score, latency_ms
 
-
+'''
 ### TESTING ONLY (note returns all zeros if you do not add api key)
 repos_to_test = [
     ("huggingface", "transformers", 1.0),        # dataset + code
@@ -80,4 +102,4 @@ repos_to_test = [
 for owner, repo, expected in repos_to_test:
     score, latency = dataset_metric(owner, repo)
     print(f"{owner}/{repo} -> Score: {score} (expected {expected}), Latency: {latency} ms")
-
+'''
