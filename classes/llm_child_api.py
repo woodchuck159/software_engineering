@@ -74,8 +74,8 @@ def main():
     """
     Example of how to use the GenAiChatApi class from its new module.
     """
-    #api_key = os.getenv("API_KEY")
-    api_key = "sk-67af20896c074dfa8751fa8fe7f754e5"
+
+    api_key = os.getenv("API_KEY")
     if not api_key:
         print("Error: API_KEY environment variable not set.")
         return
