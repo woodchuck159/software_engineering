@@ -14,6 +14,7 @@ class GenAiChatApi(Api):
     CHAT_ENDPOINT = "/api/chat/completions"
     _TIMEOUT = 10.0
 
+
     def __init__(self, base_url: str, model: str):
         """
         Initializes the GenAiChatApi client.
