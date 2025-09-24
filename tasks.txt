@@ -1,0 +1,4 @@
+process_data("Analyze system performance", 100) 1.5
+log_activity("User login successful") 0.5
+process_data("Generate weekly report", 50, "extra_arg") 2.0
+log_activity("Database backup complete") 0.2
