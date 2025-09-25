@@ -62,14 +62,3 @@ def rampup_time_metric(filename: str, verbosity: int, log_queue) -> Tuple[float,
     
     return score, time_taken
 
-def main():
-    """
-    Main function for direct testing of this metric.
-    This is not called when the script is run by the main metric_caller.
-    """
-    print("This script is intended to be called as a metric by the main runner.")
-    print("To test it, you would need to create a dummy file and a dummy queue.")
-
-
-if __name__ == "__main__":
-    main()
