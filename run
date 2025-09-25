@@ -3,6 +3,7 @@
 import argparse
 import sys
 import subprocess
+import parse_project_file from url_class
 
 def main() -> int:
     parser = argparse.ArgumentParser(
@@ -50,15 +51,15 @@ def main() -> int:
             print("Verbose: Running tests...")
         print("Running test suite...")
 
-    else :
+    else:
         if args.verbose:
             print(f"Verbose: Processing URL file {args.target}")
         print(f"Processing file: {args.target}")
+        parse_project_file(args.target)
+
 
     return 0
 
 
 if __name__ == "__main__":
     main()
-    return 0
-
