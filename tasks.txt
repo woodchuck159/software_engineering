@@ -1,0 +1,5 @@
+code_quality_check(main_file, verbosity_level, log_queue) 1.5
+api_latency_test(endpoint_url, api_timeout, verbosity_level, log_queue) 0.5
+code_quality_check(test_file, verbosity_level, log_queue) 2.0
+failing_task(fail_message, verbosity_level, log_queue) 1.0
+code_quality_check(non_existent_file, verbosity_level, log_queue) 1.0
