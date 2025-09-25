@@ -1,4 +1,6 @@
-process_data("Analyze system performance", 100) 1.5
-log_activity("User login successful") 0.5
-process_data("Generate weekly report", 50, "extra_arg") 2.0
-log_activity("Database backup complete") 0.2
+code_quality_check(main_file, verbosity_level) 1.5
+api_latency_test(endpoint_url, api_timeout, verbosity_level) 0.5
+code_quality_check(test_file, verbosity_level) 2.0
+failing_task(fail_message, verbosity_level) 1.0
+code_quality_check(non_existent_file, verbosity_level) 1.0
+performance_claims_metric(readme) 1.0
