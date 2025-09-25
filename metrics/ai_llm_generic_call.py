@@ -37,8 +37,6 @@ def process_file_and_get_response(filename: str, instruction: str, model: str) -
         - The total time spent in the function (float).
     """
     api_key = os.getenv("API_KEY", "YOUR_API_KEY_HERE") # Replace with your key if not set as env var
-
-    api_key = "sk-e406cf0d66cd45a4b12e9540f0240415"
     if not api_key or api_key == "YOUR_API_KEY_HERE":
         print("Error: API_KEY not set.")
         return
