@@ -2,8 +2,9 @@
 
 import argparse
 import sys
+import subprocess
 
-def main() -> None:
+def main() -> int:
     parser = argparse.ArgumentParser(
         prog="run",
         description="LLM Model Evaluator",
@@ -11,15 +12,15 @@ def main() -> None:
     )
     
     parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS,
-                        help="""usage: run [-v | --verbose] [-h | --help] { install, test } | URL_FILE
-                        positional arguments:
-                            install             Install any dependencies needed
-                            test                Runs testing suite
-                            URL_FILE            Absolute file location of set of URLs
+                        help="""usage: run [-v | --verbose] [-h | --help] { install, test } | URL_FILE\n
+                        positional arguments:\n
+                        \tinstall             Install any dependencies needed\n
+                        \ttest                Runs testing suite\n
+                        \tURL_FILE            Absolute file location of set of URLs\n
                         
-                        options:
-                            -h, --help          show this help message
-                            -v. --verbose       enable verbose output""")
+                        options:\n
+                        \t-h, --help          show this help message\n
+                        \t-v. --verbose       enable verbose output\n""")
     
     parser.add_argument(
         '-v', '--verbose',
@@ -39,9 +40,10 @@ def main() -> None:
 
     # --- dispatch logic ---
     if args.target == "install":
-        if args.verbose:
-            print("Verbose: Installing dependencies...")
+        # if args.verbose:
+        #     print("Verbose: Installing dependencies...")
         print("Installing dependencies...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "--user", "-r", "requirements.txt"])
 
     elif args.target == "test":
         if args.verbose:
@@ -53,6 +55,7 @@ def main() -> None:
             print(f"Verbose: Processing URL file {args.target}")
         print(f"Processing file: {args.target}")
 
+    return 0
 
 
 if __name__ == "__main__":
