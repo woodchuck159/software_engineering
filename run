@@ -1,0 +1,59 @@
+#!/usr/bin/python3
+
+import argparse
+import sys
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        prog="run",
+        description="LLM Model Evaluator",
+        add_help=False
+    )
+    
+    parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS,
+                        help="""usage: run [-v | --verbose] [-h | --help] { install, test } | URL_FILE
+                        positional arguments:
+                            install             Install any dependencies needed
+                            test                Runs testing suite
+                            URL_FILE            Absolute file location of set of URLs
+                        
+                        options:
+                            -h, --help          show this help message
+                            -v. --verbose       enable verbose output""")
+    
+    parser.add_argument(
+        '-v', '--verbose',
+        action='store_true',
+        help='enable verbose output'
+    )
+
+    # install command
+    parser.add_argument(
+        "target",
+        type=str,
+        help="Choose 'install', 'test', or URL path."
+    )
+
+    args = parser.parse_args()
+
+
+    # --- dispatch logic ---
+    if args.target == "install":
+        if args.verbose:
+            print("Verbose: Installing dependencies...")
+        print("Installing dependencies...")
+
+    elif args.target == "test":
+        if args.verbose:
+            print("Verbose: Running tests...")
+        print("Running test suite...")
+
+    else :
+        if args.verbose:
+            print(f"Verbose: Processing URL file {args.target}")
+        print(f"Processing file: {args.target}")
+
+
+
+if __name__ == "__main__":
+    main()
