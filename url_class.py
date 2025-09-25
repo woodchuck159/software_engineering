@@ -6,6 +6,7 @@ from typing import Optional, List
 @dataclass
 class Code:
     link: str
+    namespace: str = ""
 
 
 @dataclass
@@ -48,7 +49,7 @@ def parse_project_file(filepath: str | Path) -> List[ProjectGroup]:
     project_groups: List[ProjectGroup] = []
     path = Path(filepath)
 
-    with path.open("r", encoding="utf-8") as f:
+    with path.open("r", encoding="ASCII") as f:
         for line in f:
             line = line.strip()
             if not line:  # skip empty lines
