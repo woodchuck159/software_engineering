@@ -47,7 +47,7 @@ class Api :
         return f"{self.base_url.rstrip('/')}/{endpoint.lstrip('/')}"
 
 
-    def get(self, endpoint: str = "", payload: dict[str, typing.Any] | None = {}) -> dict[str, typing.Any] :
+    def get(self, endpoint: str = "", payload: dict[str, typing.Any] | None = {}) -> typing.Any :
         url : str = self.build_url(endpoint)
         
         headers: dict[str, typing.Any] | None = {}
@@ -65,13 +65,16 @@ class Api :
         if status_code != 200 :
             raise Exception(f"GET request failed with status code {status_code}: {resp.text}")
 
-        return resp.json()
+        try:
+            return resp.json()
+        except Exception:
+            return resp.text
 
-    def post(self, endpoint: str = "", payload: dict = {}) -> dict :
+    def post(self, endpoint: str = "", payload: dict[str, str] = {}) -> dict[str, str] :
         url : str = self.build_url(endpoint)
         
         # <-- YOU WERE MISSING THIS SECTION IN post()
-        headers = {}
+        headers: dict[str, str] = {}
         if self.__bearer_token:
             headers["Authorization"] = f"Bearer {self.__bearer_token}"
         # -->
