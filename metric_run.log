@@ -1,0 +1,11 @@
+--- Log started at 2025-09-25 17:14:57 ---
+[5472] Checking quality of 'c:\Users\aleca\Documents\GitHub\ece30861-team-8\main_file.py'
+[26576] Testing latency for 'https://api.example.com/v1/status' with timeout 30s
+[32728] Checking quality of 'c:\Users\aleca\Documents\GitHub\ece30861-team-8\test_file.py'
+[9628] Starting a task that is designed to fail...
+[29996] Checking quality of 'c:\Users\aleca\Documents\GitHub\ece30861-team-8\no_file.txt'
+[26576] Finished api_latency_test. Score: 85.00, Time: 0.7515s
+[5472] Finished code_quality_check. Score: 80, Time: 1.0034s
+[32728] Finished code_quality_check. Score: 100, Time: 1.0018s
+[29996] ERROR: File not found: c:\Users\aleca\Documents\GitHub\ece30861-team-8\no_file.txt
+--- Log ended at 2025-09-25 17:14:58 ---
