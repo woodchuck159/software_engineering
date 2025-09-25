@@ -112,17 +112,3 @@ def main():
     else:
         print(f"\nFailed to get a response from the model for {file_to_process}.")
 
-
-
-if __name__ == "__main__":
-    # Create a dummy file for the demonstration
-    try:
-        with open("sample_document.md", "w") as f:
-            f.write("# Introduction to Python\n\n")
-            f.write("Python is a high-level, interpreted programming language known for its clear syntax and code readability. ")
-            f.write("It supports multiple programming paradigms, including structured, object-oriented, and functional programming. ")
-            f.write("Its extensive standard library is one of its greatest strengths.")
-    except Exception as e:
-        print(f"Could not create sample file: {e}")
-    
-    main()
