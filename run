@@ -3,9 +3,17 @@
 import argparse
 import sys
 import subprocess
-import parse_project_file from url_class
+import url_class
+import metric_caller
+from collections import defaultdict
+import metric_caller
+import time
+from json_output import build_model_output
+
 
 def main() -> int:
+    time = time.time()
+    logfile = "LOG_FILE.txt"
     parser = argparse.ArgumentParser(
         prog="run",
         description="LLM Model Evaluator",
@@ -52,12 +60,27 @@ def main() -> int:
         print("Running test suite...")
 
     else:
-        if args.verbose:
-            print(f"Verbose: Processing URL file {args.target}")
-        print(f"Processing file: {args.target}")
-        parse_project_file(args.target)
+        #Running URL FILE
+        project_groups: list[url_class.ProjectGroup] = url_class.parse_project_file(args.target)
+        for i in project_groups:
+            
+            
+            
+            
+            a = {
+                "repo_owner": i.model.namespace,
+                "repo_name": i.model.repo
 
 
+            }
+
+            x = metric_caller.load_available_functions("./metrics")
+            scores,latency = metric_caller.run_concurrently_from_file("./tasks.txt",a,x,logfile)
+
+            build_model_output(f"{i.code.namespace}","code",scores,latency)
+            build_model_output(f"{i.dataset.namespace}","dataset",scores,latency)
+            build_model_output(f"{i.model.namespace}/{i.model.repo}","model",scores,latency)
+    
     return 0
 
 
