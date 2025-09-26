@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 case "$1" in
 
   install)
@@ -18,3 +17,4 @@ case "$1" in
     ;;
 
 esac
+
