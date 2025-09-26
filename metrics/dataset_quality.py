@@ -4,7 +4,7 @@ from typing import Tuple, Dict, Any, List
 import pandas as pd
 from datasets import load_dataset
 
-def evaluate_dataset_quality(dataset_name: str, verbosity: int, log_queue, split: str = "train") -> Tuple[float, float]:
+def evaluate_dataset_quality(dataset_name: str, verbosity: int, log_queue) -> Tuple[float, float]:
     """
     Evaluates the quality of a Hugging Face dataset and returns a score and execution time.
 
@@ -22,6 +22,7 @@ def evaluate_dataset_quality(dataset_name: str, verbosity: int, log_queue, split
     start_time = time.perf_counter()
     pid = os.getpid()
     score = 0.0  # Default score for any failure
+    split: str = "train"
 
     try:
         if verbosity >= 1:

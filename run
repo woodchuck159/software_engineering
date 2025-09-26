@@ -64,18 +64,19 @@ def main() -> int:
         project_groups: list[url_class.ProjectGroup] = url_class.parse_project_file(args.target)
         for i in project_groups:
             
-            
-            
-            
-            a = {
+            input_dict = {
                 "repo_owner": i.model.namespace,
-                "repo_name": i.model.repo
-
-
+                "repo_name": i.model.repo,
+                "filename": "WE NEED TO ADD FILEPATH TO README HERE",
+                "verbosity": 1 if args.verbose else 0 ,
+                "log_queue": logfile,
+                "model_size_bytes": "WE NEED TO ADD MODEL SIZE HERE",
+                "github_str": f"{i.code.link}",  # New parameter for GitHub repo
+                "dataset_name": f"{i.dataset.namespace}",  # New parameter for dataset name
             }
 
             x = metric_caller.load_available_functions("./metrics")
-            scores,latency = metric_caller.run_concurrently_from_file("./tasks.txt",a,x,logfile)
+            scores,latency = metric_caller.run_concurrently_from_file("./tasks.txt",input_dict,x,logfile)
 
             build_model_output(f"{i.code.namespace}","code",scores,latency)
             build_model_output(f"{i.dataset.namespace}","dataset",scores,latency)
