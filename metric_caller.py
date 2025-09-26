@@ -129,11 +129,15 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, availab
         return {'net_score': 0.0}, {}
     
     if script_verbosity > 0: print("\n--- Starting all processes ---")
+    concurrent_start_time = time.perf_counter()
     for p in processes: p.start()
     
     # (Result collection remains the same)
     if script_verbosity > 0: print("--- Collecting results ---")
-    times_dictionary = {}
+    # The json_output function expects a 'net_score_latency' key.
+    # We will calculate this as the total wall-clock time for all concurrent tasks.
+    times_dictionary = { "net_score_latency": 0.0 }
+
     scores_dictionary = {}
     net_score = 0.0
     func_call_counts = defaultdict(int)
@@ -147,6 +151,9 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, availab
         net_score += score * weight
     scores_dictionary['net_score'] = net_score
 
+    concurrent_end_time = time.perf_counter()
+    times_dictionary["net_score_latency"] = concurrent_end_time - concurrent_start_time
+
     for p in processes: p.join()
     if script_verbosity > 0: print("\n--- All processes have completed ---")
     
@@ -157,4 +164,3 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, availab
     logger.join()
     
     return scores_dictionary, times_dictionary
-

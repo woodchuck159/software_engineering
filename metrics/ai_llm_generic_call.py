@@ -38,21 +38,21 @@ def process_file_and_get_response(filename: str, instruction: str, model: str) -
     """
     api_key = os.getenv("API_KEY", "YOUR_API_KEY_HERE") # Replace with your key if not set as env var
     if not api_key or api_key == "YOUR_API_KEY_HERE":
-        print("Error: API_KEY not set.")
+        # print("Error: API_KEY not set.")
         return
 
     if not filename.endswith(('.md', '.txt')):
-        print("Error: Invalid file type. Please provide a .md or .txt file.")
+        # print("Error: Invalid file type. Please provide a .md or .txt file.")
         return None
 
     try:
         with open(filename, 'r', encoding='utf-8') as f:
             file_content = f.read()
     except FileNotFoundError:
-        print(f"Error: The file '{filename}' was not found.")
+        # print(f"Error: The file '{filename}' was not found.")
         return None
     except Exception as e:
-        print(f"An error occurred while reading the file: {e}")
+        # print(f"An error occurred while reading the file: {e}")
         return None
 
     # Instructions for the LLM
@@ -68,7 +68,7 @@ def process_file_and_get_response(filename: str, instruction: str, model: str) -
     chat_api.set_bearer_token(api_key)
 
     # Get a completion
-    print(f"\n> Sending content from '{filename}' to the model...")
+    # print(f"\n> Sending content from '{filename}' to the model...")
     response_text = chat_api.get_chat_completion(prompt)
 
     

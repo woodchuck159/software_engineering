@@ -3,7 +3,7 @@ import time
 import subprocess
 from typing import Tuple
 
-def get_pylint_score(github_str: str, verbosity: int, log_queue) -> Tuple[float, float]:
+def code_quality(github_str: str, verbosity: int, log_queue) -> Tuple[float, float]:
     """
     Computes the PyLint score for a Python file, logging its progress to a queue.
 
@@ -14,7 +14,7 @@ def get_pylint_score(github_str: str, verbosity: int, log_queue) -> Tuple[float,
 
     Returns:
         A tuple containing:
-        - The PyLint score scaled from 0.0 to 1.0 (-1.0 on error).
+        - The PyLint score scaled from 0.0 to 1.0.
         - The total time spent (float).
     """
     start_time = time.perf_counter()
