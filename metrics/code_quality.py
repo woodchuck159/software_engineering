@@ -3,12 +3,12 @@ import time
 import subprocess
 from typing import Tuple
 
-def get_pylint_score(file_path: str, verbosity: int, log_queue) -> Tuple[float, float]:
+def get_pylint_score(github_str: str, verbosity: int, log_queue) -> Tuple[float, float]:
     """
     Computes the PyLint score for a Python file, logging its progress to a queue.
 
     Args:
-        file_path (str): The absolute path to the Python file to analyze.
+        github_str (str): The GitHub repository string (e.g., "owner/repo").
         verbosity (int): The verbosity level (0=silent, 1=info, 2=debug).
         log_queue (multiprocessing.Queue): The queue to send log messages to.
 
@@ -22,12 +22,12 @@ def get_pylint_score(file_path: str, verbosity: int, log_queue) -> Tuple[float, 
     score = 0.0  # Default score for any failure
 
     if verbosity >= 1:
-        log_queue.put(f"[{pid}] Running PyLint on '{os.path.basename(file_path)}'...")
+        log_queue.put(f"[{pid}] Running PyLint on '{os.path.basename(github_str)}'...")
 
     try:
         # Run PyLint and capture output. check=False prevents an exception on non-zero exit codes.
         result = subprocess.run(
-            ["pylint", file_path, "--score=y"],
+            ["pylint", github_str, "--score=y"],
             capture_output=True,
             text=True,
             check=False
@@ -48,23 +48,23 @@ def get_pylint_score(file_path: str, verbosity: int, log_queue) -> Tuple[float, 
                         score = float(score_str) / 10.0
                         found_score = True
                         if verbosity >= 1:
-                            log_queue.put(f"[{pid}] Found PyLint score for '{os.path.basename(file_path)}': {score*10:.2f}/10")
+                            log_queue.put(f"[{pid}] Found PyLint score for '{os.path.basename(github_str)}': {score*10:.2f}/10")
                         break  # Inner loop
                 if found_score:
                     break  # Outer loop
         
         if not found_score:
-            log_queue.put(f"[{pid}] [WARNING] Could not find PyLint score line in output for '{file_path}'.")
+            log_queue.put(f"[{pid}] [WARNING] Could not find PyLint score line in output for '{github_str}'.")
             if verbosity >= 2:
-                log_queue.put(f"[{pid}] [DEBUG] PyLint output for '{file_path}':\n---BEGIN---\n{output}\n---END---")
+                log_queue.put(f"[{pid}] [DEBUG] PyLint output for '{github_str}':\n---BEGIN---\n{output}\n---END---")
 
     except FileNotFoundError:
         log_queue.put(f"[{pid}] [CRITICAL ERROR] 'pylint' command not found. Is PyLint installed and in the system's PATH?")
     except Exception as e:
-        log_queue.put(f"[{pid}] [CRITICAL ERROR] running PyLint on '{file_path}': {e}")
+        log_queue.put(f"[{pid}] [CRITICAL ERROR] running PyLint on '{github_str}': {e}")
         if verbosity >= 2:
             # The captured output might be useful for debugging the exception
-            log_queue.put(f"[{pid}] [DEBUG] PyLint output for '{file_path}':\n---BEGIN---\n{output}\n---END---")
+            log_queue.put(f"[{pid}] [DEBUG] PyLint output for '{github_str}':\n---BEGIN---\n{output}\n---END---")
     
     end_time = time.perf_counter()
     time_taken = end_time - start_time

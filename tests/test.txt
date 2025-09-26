@@ -1,3 +1,1 @@
-http://github.com/code1,http://data.org/ds1,http://huggingface.co/model1
-http://github.com/code2,,http://huggingface.co/model2
-,,http://huggingface.co/model3
+,,https://huggingface.co/google/gemma-3-270m/tree/main
