@@ -1,5 +1,8 @@
-code_quality_check(main_file, verbosity_level, log_queue) 1.5
-api_latency_test(endpoint_url, api_timeout, verbosity_level, log_queue) 0.5
-code_quality_check(test_file, verbosity_level, log_queue) 2.0
-failing_task(fail_message, verbosity_level, log_queue) 1.0
-code_quality_check(non_existent_file, verbosity_level, log_queue) 1.0
+bus_factor_metric(repo_owner, repo_name, verbosity, log_queue) 1
+calculate_license_score(repo_owner, repo_name, verbosity, log_queue) 1
+calculate_size_score(model_size_bytes, verbosity, log_queue) 1
+code_quality(github, verbosity, log_queue) 1
+dataset_metric(repo_owner, repo_name, github_token, verbosity, log_queue) 1
+dataset_quality(dataset_name, verbosity, log_queue) 1
+performance_claims_metric(readme, verbosity, log_queue) 1
+rampup_time_metric(readme, verbosity, log_queue) 1
