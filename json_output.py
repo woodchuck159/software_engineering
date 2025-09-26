@@ -14,22 +14,22 @@ def build_model_output(
         "category": category,
         "net_score": scores["net_score"],
         "net_score_latency": latency["net_score_latency"],
-        "ramp_up_time": scores["ramp_up_time"],
-        "ramp_up_time_latency": latency["ramp_up_time_latency"],
-        "bus_factor": scores["bus_factor"],
-        "bus_factor_latency": latency["bus_factor_latency"],
-        "performance_claims": scores["performance_claims"],
-        "performance_claims_latency": latency["performance_claims_latency"],
-        "license": scores["license"],
-        "license_latency": latency["license_latency"],
-        "size_score": scores["size_score"],  
-        "size_score_latency": latency["size_score_latency"],
-        "dataset_and_code_score": scores["dataset_and_code_score"],
-        "dataset_and_code_score_latency": latency["dataset_and_code_score_latency"],
+        "ramp_up_time": scores["rampup_time_metric"],
+        "ramp_up_time_latency": latency["rampup_time_metric"],
+        "bus_factor": scores["bus_factor_metric"],
+        "bus_factor_latency": latency["bus_factor_metric"],
+        "performance_claims": scores["performance_claims_metric"],
+        "performance_claims_latency": latency["performance_claims_metric"],
+        "license": scores["calculate_license_score"],
+        "license_latency": latency["calculate_license_score"],
+        "size_score": scores["calculate_size_score"],  
+        "size_score_latency": latency["calculate_size_score"],
+       "dataset_and_code_score": scores["dataset_metric"], #not implemented yet
+       "dataset_and_code_score_latency": latency["dataset_metric"],#not implemented yet
         "dataset_quality": scores["dataset_quality"],
-        "dataset_quality_latency": latency["dataset_quality_latency"],
+        "dataset_quality_latency": latency["dataset_quality"],
         "code_quality": scores["code_quality"],
-        "code_quality_latency": latency["code_quality_latency"]
+        "code_quality_latency": latency["code_quality"]
     }
     return output
 

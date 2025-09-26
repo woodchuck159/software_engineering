@@ -15,13 +15,13 @@ import os
 
 def main() -> int:
 
-    time = time.time()
+    start_time = time.time()
+
 
     verbosity = my_variable_value = os.getenv('LOG_LEVEL', None)
     log_file_location = os.getenv('LOG_FILE', None)
     gen_ai_key = os.getenv('GEN_AI_STUDIO_API_KEY', None)
     github_token = os.getenv("GITHUB_TOKEN",None)
-
 
     if (verbosity == None or log_file_location == None or gen_ai_key == None or github_token == None):
         return 1
@@ -89,7 +89,7 @@ def main() -> int:
                 "dataset_name": f"{i.dataset.namespace}",  # New parameter for dataset name
             }
 
-            x = metric_caller.load_available_functions("./metrics")
+            x = metric_caller.load_available_functions("metrics")
             scores,latency = metric_caller.run_concurrently_from_file("./tasks.txt",input_dict,x,logfile)
 
             build_model_output(f"{i.code.namespace}","code",scores,latency)

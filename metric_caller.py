@@ -45,7 +45,7 @@ def process_worker(target_func, result_queue, weight, func_name, *args):
         # The metric function itself should use the log_queue to report its error before failing.
         # This is a fallback print for critical failures in the worker itself.
         print(f"[WORKER CRASH] Process for '{func_name}' failed critically: {e}")
-        result_queue.put((0, time_taken, float(weight), func_name))
+        result_queue.put((0.0, time_taken, float(weight), func_name))
 
 def load_available_functions(directory: str, script_verbosity: int = 1) -> dict:
     # This function remains the same.
@@ -80,6 +80,7 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, availab
     line_pattern = re.compile(r'(\w+)\((.*)\)\s*([\d.]+)')
     processes = []
     results_queue = multiprocessing.Queue()
+    total_weight = 0.0 # Accumulator for the total weight of all valid metrics
 
     if script_verbosity > 0: print(f"\nReading and parsing tasks from '{tasks_filename}'...")
     
@@ -120,6 +121,7 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, availab
             process_args = (target_func, results_queue, weight, func_name) + tuple(resolved_args)
             process = multiprocessing.Process(target=process_worker, args=process_args)
             processes.append(process)
+            total_weight += weight # Add the weight of this valid metric to the total
             if script_verbosity > 0: print(f'  - Queued: {func_name}(...) with weight {weight}')
 
     if not processes:
@@ -132,23 +134,25 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, availab
     concurrent_start_time = time.perf_counter()
     for p in processes: p.start()
     
-    # (Result collection remains the same)
     if script_verbosity > 0: print("--- Collecting results ---")
-    # The json_output function expects a 'net_score_latency' key.
-    # We will calculate this as the total wall-clock time for all concurrent tasks.
     times_dictionary = { "net_score_latency": 0.0 }
-
     scores_dictionary = {}
-    net_score = 0.0
-    func_call_counts = defaultdict(int)
-
+    weighted_score_sum = 0.0
+    
     for _ in range(len(processes)):
         score, time_taken, weight, func_name = results_queue.get()
-        func_call_counts[func_name] += 1
-        unique_key = f"{func_name}_{func_call_counts[func_name]}"
-        scores_dictionary[unique_key] = score
-        times_dictionary[unique_key] = time_taken
-        net_score += score * weight
+        
+        # --- FIX: Use the function name directly as the key ---
+        scores_dictionary[func_name] = score
+        times_dictionary[func_name] = time_taken
+        weighted_score_sum += score * weight
+    
+    # Calculate net_score as a weighted average
+    if total_weight > 0:
+        net_score = weighted_score_sum / total_weight
+    else:
+        net_score = 0.0
+            
     scores_dictionary['net_score'] = net_score
 
     concurrent_end_time = time.perf_counter()
@@ -164,3 +168,4 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, availab
     logger.join()
     
     return scores_dictionary, times_dictionary
+
