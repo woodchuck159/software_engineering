@@ -73,7 +73,7 @@ def calculate_size_score(model_size_bytes: int, verbosity: int, log_queue) -> Tu
     if verbosity >= 1: # Informational
         log_queue.put(f"[{pid}] [INFO] Finished calculation. Average Score={final_score:.2f}, Time={time_taken:.4f}s")
 
-    return final_score, time_taken
+    return scores, time_taken
 
 def main():
     """
