@@ -2,7 +2,7 @@ import os
 import time
 from typing import Tuple, Dict
 
-def calculate_size_score(model_size_bytes: int, verbosity: int, log_queue) -> Tuple[float, float]:
+def calculate_size_score(model_size_bytes: int, verbosity: int, log_queue) -> Tuple[dict, float]:
     """
     Calculates a score based on the size of a model file, logging to a queue.
     Verbosity is controlled by the passed-in argument (0=silent, 1=INFO, 2=DEBUG).
