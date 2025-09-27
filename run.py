@@ -24,7 +24,7 @@ def main() -> int:
     github_token = os.getenv("GITHUB_TOKEN",None)
 
     if (verbosity == None or log_file_location == None or gen_ai_key == None or github_token == None):
-        return 1
+        sys.exit(1)
 
 
     logfile = "LOG_FILE.txt"
