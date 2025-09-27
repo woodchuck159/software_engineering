@@ -39,7 +39,7 @@ def process_worker(target_func, result_queue, weight, func_name, *args):
     start_time = time.perf_counter()
     try:
         score, time_taken = target_func(*args)
-        result_queue.put((float(score), float(time_taken), float(weight), func_name))
+        result_queue.put((score, float(time_taken), float(weight), func_name))
     except Exception as e:
         time_taken = time.perf_counter() - start_time
         # The metric function itself should use the log_queue to report its error before failing.
@@ -145,7 +145,10 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, availab
         # --- FIX: Use the function name directly as the key ---
         scores_dictionary[func_name] = score
         times_dictionary[func_name] = time_taken
-        weighted_score_sum += score * weight
+        if func_name != "calculate_size_score":
+            weighted_score_sum += score * weight
+        else:
+             weighted_score_sum += (sum(score.values()) / len(score) if score else 0.0) * weight
     
     # Calculate net_score as a weighted average
     if total_weight > 0:
