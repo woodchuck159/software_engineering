@@ -3,6 +3,7 @@ import configparser
 import typing
 from typing import TextIO
 
+
 class Api :
     """
     A simple API client for making GET requests to a specified base URL.
@@ -63,11 +64,11 @@ class Api :
         
         status_code: int = resp.status_code
         if status_code != 200 :
-            raise Exception(f"GET request failed with status code {status_code}: {resp.text}")
+            raise Exception(f"GET request failed with status code {status_code} from {url}: {resp.text}")
 
         try:
             return resp.json()
-        except Exception:
+        except requests.exceptions.JSONDecodeError:
             return resp.text
 
     def post(self, endpoint: str = "", payload: dict[str, str] = {}) -> dict[str, str] :
