@@ -119,7 +119,7 @@ def main() -> int:
             input_dict = {
                 "repo_owner": i.model.namespace,
                 "repo_name": i.model.repo,
-                "verbosity": 1 if args.verbose else 0 ,
+                "verbosity": log_level_str,
                 "log_queue": logfile,
                 "model_size_bytes": size,
                 "github_str": f"{i.code.link}",  # New parameter for GitHub repo
