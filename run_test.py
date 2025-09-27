@@ -8,6 +8,7 @@ import metric_caller
 import time
 from json_output import build_model_output
 import os
+from get_model_metrics import get_model_metrics
 
 if __name__ == '__main__':
     verbosity = 1
@@ -21,6 +22,12 @@ if __name__ == '__main__':
     #Running URL FILE
     project_groups: list[url_class.ProjectGroup] = url_class.parse_project_file("C:/Users/aleca/Documents/GitHub/ece30861-team-8/test.txt")
     for i in project_groups:
+
+        #Get Model Metrics returns a dictionary with the following keys: namespace, repo, model_size_bytes
+        model_metrics = get_model_metrics(i.model.namespace, i.model.repo)
+        
+
+
         i.code.link = "https://github.com/alecandrulis/ece30861-team-8" 
         i.dataset.namespace = "imdb"
         i.model.namespace = "alecandrulis"
