@@ -89,9 +89,7 @@ def main() -> int:
 
             x = metric_caller.load_available_functions("metrics")
             scores,latency = metric_caller.run_concurrently_from_file("./tasks.txt",input_dict,x,logfile)
-
-            build_model_output(f"{i.code.namespace}","code",scores,latency)
-            build_model_output(f"{i.dataset.namespace}","dataset",scores,latency)
+            
             build_model_output(f"{i.model.namespace}/{i.model.repo}","model",scores,latency)
     
     return 0

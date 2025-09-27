@@ -98,8 +98,14 @@ def parse_project_file(filepath: str | Path) -> List[ProjectGroup]:
 
             code_link, dataset_link, model_link = parts
 
-            ns, rp, rev = parse_huggingface_url(model_link) if model_link else ("", "", "")
-            data_repo = parse_hf_dataset_url_repo(dataset_link)
+            if model_link != "":
+                ns, rp, rev = parse_huggingface_url(model_link)
+            else:
+                ns, rp, rev = ("", "", "")
+            if dataset_link != "":
+                data_repo = parse_hf_dataset_url_repo(dataset_link)
+            else:
+                data_repo = ""
             group = ProjectGroup(
                 code=Code(code_link) if code_link else None,
                 dataset=Dataset(dataset_link, namespace="", repo=data_repo, rev="") if dataset_link else None,
