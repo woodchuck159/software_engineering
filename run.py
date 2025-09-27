@@ -8,6 +8,8 @@ import metric_caller
 import time
 from json_output import build_model_output
 import os
+from get_model_metrics import get_model_size
+
 import requests
 
 
@@ -112,15 +114,16 @@ def main() -> int:
         project_groups: list[url_class.ProjectGroup] = url_class.parse_project_file(args.target)
         for i in project_groups:
             
+            size = get_model_size(i.model.namespace, i.model.repo, i.model.rev)
+
             input_dict = {
                 "repo_owner": i.model.namespace,
                 "repo_name": i.model.repo,
-                "filename": "WE NEED TO ADD FILEPATH TO README HERE",
                 "verbosity": 1 if args.verbose else 0 ,
                 "log_queue": logfile,
-                "model_size_bytes": "WE NEED TO ADD MODEL SIZE HERE",
+                "model_size_bytes": size,
                 "github_str": f"{i.code.link}",  # New parameter for GitHub repo
-                "dataset_name": f"{i.dataset.namespace}",  # New parameter for dataset name
+                "dataset_name": f"{i.dataset.repo}",  # New parameter for dataset name
             }
 
             x = metric_caller.load_available_functions("metrics")
