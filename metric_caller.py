@@ -17,7 +17,7 @@ def logger_process(log_queue: multiprocessing.Queue, log_file_path: str):
     A dedicated process that listens for messages on a queue and writes them to a log file.
     """
     try:
-        with open(log_file_path, 'w', encoding='utf-8') as f:
+        with open(log_file_path, 'w', encoding='ASCII') as f:
            #f.write(f"--- Log started at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n")
             while True:
                 message = log_queue.get()
@@ -174,7 +174,8 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, metrics
     if script_verbosity > 0:
         log_queue.put("[INFO] --- All processes have completed ---")
     
-    log_queue.put(None)
+    if (script_verbosity == 0):
+        log_queue.put(None)
     logger.join()
     
     return scores_dictionary, times_dictionary
