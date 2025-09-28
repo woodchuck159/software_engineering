@@ -18,7 +18,7 @@ def calculate_license_score(license_info: str, verbosity: int, log_queue) -> Tup
     if verbosity >= 1: # Informational
         log_queue.put(f"[{pid}] [INFO] Starting license score calculation for {license_info}...")
 
-    # latency timer
+    # latency time
     start_time = time.time()  
 
     try:
