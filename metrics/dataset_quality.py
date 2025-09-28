@@ -4,7 +4,7 @@ from typing import Tuple, Dict, Any, List
 import pandas as pd
 from datasets import load_dataset
 
-def dataset_quality(dataset_name: str, verbosity: int, log_queue) -> Tuple[float, float]:
+def evaluate_dataset_quality(dataset_name: str, verbosity: int, log_queue) -> Tuple[float, float]:
     """
     Evaluates the quality of a Hugging Face dataset and returns a score and execution time.
 
@@ -74,7 +74,7 @@ def dataset_quality(dataset_name: str, verbosity: int, log_queue) -> Tuple[float
     except Exception as e:
         # Critical errors should always be logged regardless of verbosity.
         log_queue.put(f"[{pid}] [CRITICAL ERROR] evaluating dataset '{dataset_name}': {e}")
-        score = 0.0
+        score = -1.0
 
     end_time = time.perf_counter()
     time_taken = end_time - start_time
