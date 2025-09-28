@@ -144,7 +144,7 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, availab
         
         # --- FIX: Use the function name directly as the key ---
         scores_dictionary[func_name] = score
-        times_dictionary[func_name] = time_taken
+        times_dictionary[func_name] = round(time_taken * 1000)
         if func_name != "calculate_size_score":
             weighted_score_sum += score * weight
         else:
