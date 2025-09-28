@@ -1,7 +1,6 @@
 
 import json
-
-import json
+import sys
 
 def build_model_output(
     name,
@@ -34,7 +33,7 @@ def build_model_output(
     #return output
 
     #print to stdout
-    print(json.dumps(output))
+    sys.stdout.write(json.dumps(output) + "\n")
 
 #testing
 if __name__ == "__main__":
