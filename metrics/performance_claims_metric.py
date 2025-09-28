@@ -54,7 +54,8 @@ def performance_claims_metric(filename: str, verbosity: int, log_queue) -> Tuple
         score = 0.0 # Ensure score is 0 on conversion failure
     except Exception as e:
         # Log any other critical error before the process terminates
-        log_queue.put(f"[{pid}] [CRITICAL ERROR] in performance_claims_metric: {e}")
+        if verbosity >0:
+            log_queue.put(f"[{pid}] [CRITICAL ERROR] in performance_claims_metric: {e}")
         raise # Re-raise the exception to be caught by the worker
 
     end_time = time.time()

@@ -68,10 +68,6 @@ def main() -> int:
         # print("ERROR: GEN_AI_STUDIO_API_KEY environment variable not set.", file=sys.stderr)
         sys.exit(1)
 
-    with open(log_file_path, 'w', encoding='utf-8') as f:
-        pass # This creates an empty file
-
-
     parser = argparse.ArgumentParser(
         prog="run",
         description="LLM Model Evaluator",

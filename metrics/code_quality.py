@@ -59,9 +59,11 @@ def code_quality(github_str: str, verbosity: int, log_queue) -> Tuple[float, flo
                 log_queue.put(f"[{pid}] [DEBUG] PyLint output for '{github_str}':\n---BEGIN---\n{output}\n---END---")
 
     except FileNotFoundError:
-        log_queue.put(f"[{pid}] [CRITICAL ERROR] 'pylint' command not found. Is PyLint installed and in the system's PATH?")
+        if verbosity >0:
+            log_queue.put(f"[{pid}] [CRITICAL ERROR] 'pylint' command not found. Is PyLint installed and in the system's PATH?")
     except Exception as e:
-        log_queue.put(f"[{pid}] [CRITICAL ERROR] running PyLint on '{github_str}': {e}")
+        if verbosity >0:
+            log_queue.put(f"[{pid}] [CRITICAL ERROR] running PyLint on '{github_str}': {e}")
         if verbosity >= 2:
             # The captured output might be useful for debugging the exception
             log_queue.put(f"[{pid}] [DEBUG] PyLint output for '{github_str}':\n---BEGIN---\n{output}\n---END---")
