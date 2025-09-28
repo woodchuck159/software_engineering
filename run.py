@@ -128,14 +128,15 @@ def main() -> int:
                 "repo_owner": i.model.namespace,
                 "repo_name": i.model.repo,
                 "verbosity": log_level_str,
-                "log_queue": logfile,
+                "log_queue": log_file_path,
                 "model_size_bytes": size,
                 "github_str": f"{i.code.link}",  # New parameter for GitHub repo
                 "dataset_name": f"{i.dataset.repo}",  # New parameter for dataset name
+                "filename" : "README FILE PATH"
             }
 
             x = metric_caller.load_available_functions("metrics")
-            scores,latency = metric_caller.run_concurrently_from_file("./tasks.txt",input_dict,x,logfile)
+            scores,latency = metric_caller.run_concurrently_from_file("./tasks.txt",input_dict,x,log_file_path)
             
             build_model_output(f"{i.model.namespace}/{i.model.repo}","model",scores,latency)
     
