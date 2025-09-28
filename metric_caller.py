@@ -169,8 +169,8 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, availab
     if script_verbosity > 0:
         log_queue.put("[INFO] --- All processes have completed ---")
     
-    if (script_verbosity == 0):
-        log_queue.put(None)
+    
+    log_queue.put(None)
     logger.join()
     
     return scores_dictionary, times_dictionary

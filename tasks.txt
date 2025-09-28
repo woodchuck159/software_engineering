@@ -1,0 +1,3 @@
+bus_factor_metric(filename, verbosity, log_queue) 3
+calculate_license_score(filename, verbosity, log_queue) 3
+calculate_size_score(model_size_bytes, verbosity, log_queue) 1
