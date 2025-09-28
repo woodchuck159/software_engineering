@@ -27,8 +27,9 @@ def logger_process(log_queue: multiprocessing.Queue, log_file_path: str):
                 f.write(f"{message}\n")
                 f.flush() # Ensure messages are written immediately
     except Exception as e:
+        pass
         # This print is a fallback for a critical logger failure
-        print(f"[Logger Process Error] An error occurred: {e}")
+        #print(f"[Logger Process Error] An error occurred: {e}")
 
 
 def process_worker(target_func, result_queue, log_queue, weight, func_name, *args):
