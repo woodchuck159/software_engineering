@@ -1,22 +1,37 @@
---- Log started at 2025-09-27 18:27:26 ---
+--- Log started at 2025-09-28 15:28:50 ---
+[WARNING] Skipped line 2: 'calculate_license_score' expects 4 args, but 3 keys were provided.
 [WARNING] Skipped line 6: Function 'dataset_quality' not found.
-[WARNING] Skipped line 7: Missing required keys in input dictionary: ['readme']
-[WARNING] Skipped line 8: Missing required keys in input dictionary: ['readme']
-[50512] [INFO] Starting license score calculation for google-bert/bert-base-uncased...
-[50512] [INFO] Fetching repo metadata from: https://api.github.com/repos/google-bert/bert-base-uncased
-[39248] Starting bus factor calculation for 'google-bert/bert-base-uncased'...
-[12520] [INFO] Starting size score calculation for model of 1 bytes...
-[12520] [INFO] Model size: 0.00 GB
-[12520] [INFO] Finished calculation. Average Score=1.00, Time=0.0048s
-[7948] Running PyLint on 'bert'...
-[28420] [INFO] Starting dataset metric calculation for google-bert/bert-base-uncased...
-[7948] [WARNING] Could not find PyLint score line in output for 'https://github.com/google-research/bert'.
-[28420] [INFO] Dataset mention found: False
-[28420] [INFO] Fetching repo contents from root...
-[50512] [CRITICAL ERROR] calculating license score for 'google-bert/bert-base-uncased': GitHub API request failed with 404
-[50512] [INFO] Finished calculation. Score=0.00, Time=13.963s
-[39248] [CRITICAL ERROR] calculating bus factor for 'google-bert/bert-base-uncased': GitHub API request failed with 404
-[39248] Bus factor calculation for 'google-bert/bert-base-uncased' complete. Score: 0.00
-[28420] [INFO] Final check -> Has Dataset: False, Has Code: False
-[28420] [INFO] Finished calculation. Score=0.00, Time=27.428s
---- Log ended at 2025-09-27 18:27:54 ---
+[28776] [INFO] Starting bus factor check based on README content...
+[28776] [INFO] No mention of contributors found in README -> Score = 0.0
+[28776] [INFO] Finished calculation. Score=0.00, Time=0.003s
+[26872] [INFO] Starting size score calculation for model of 608853227 bytes...
+[26872] [INFO] Model size: 0.57 GB
+[26872] [DEBUG] Raspberry Pi score: 0.0
+[26872] [DEBUG] Jetson Nano score: 0.5
+[26872] [DEBUG] Desktop PC score: 1.0
+[26872] [DEBUG] AWS Server score: 1.0
+[26872] [INFO] Finished calculation. Average Score=0.62, Time=0.0033s
+[33408] Running PyLint on ''...
+[34524] [INFO] Starting dataset-in-readme check...
+[34524] [INFO] Dataset mention found in README: False
+[34524] [INFO] Finished calculation. Score=0.00, Time=0.003s
+[40176] [INFO] Calling LLM for performance claims on 'whisper-tiny_README.md.txt'...
+[14868] [INFO] Calling LLM for ramp-up time on 'whisper-tiny_README.md.txt'...
+[33408] [WARNING] Could not find PyLint score line in output for ''.
+[33408] [DEBUG] PyLint output for '':
+---BEGIN---
+************* Module Command line or configuration file
+Command line or configuration file:1:0: F0001: No module named  (fatal)
+
+---END---
+[40176] [WARNING] Could not convert LLM response '##
+I0, which is a00 to.
+The is00 is0,0 is0 is0 is00 is000. The00 is00 is0000.0 is0 is000 is000000.00 is0000000. is000000000 is0b0000000000 is00000000000 is000000000000 is0 is0000000000 is000000000000 is0000000000000000000000000000000' to a float.
+[14868] [WARNING] Could not convert LLM response 'Okay.
+
+This document provides lots of.
+
+model training data. The training dataset used to the model. The dataset is available for. The model is used dataset. The dataset is used in the dataset. The dataset is used in the dataset. The model is used in the dataset. The.
+
+' to a float.
+--- Log ended at 2025-09-28 15:28:58 ---
