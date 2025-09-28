@@ -1,4 +1,4 @@
-from .api import Api
+from api import Api
 import typing
 import requests
 import os
@@ -11,6 +11,9 @@ class HuggingFaceApi(Api) :
         "model_info": "api/models/{namespace}/{repo}",
         "model_files": "api/models/{namespace}/{repo}/tree/{rev}/{path}",
         "model_file_download": "{namespace}/{repo}/resolve/{rev}/{filename}",
+        "dataset_info": "api/dataset/{namespace}/{repo}",
+        "dataset_files": "api/dataset/{namespace}/{repo}/tree/{rev}/{path}",
+        "dataset_file_download": "{namespace}/{repo}/resolve/{rev}/{filename}",
         # Add more endpoints as needed
     }
 
@@ -24,7 +27,7 @@ class HuggingFaceApi(Api) :
         self.repo = _repo
         self.rev = _rev
 
-
+# Tokens will be pulled from env var
     def set_bearer_token_from_file(self, filepath: str, section: str = "huggingface", key: str = "bearer_token"):
         super().set_bearer_token_from_file(filepath, section=section, key=key)
 
@@ -42,15 +45,23 @@ class HuggingFaceApi(Api) :
         api_endpoint: str = endpoint_temp.format(namespace=self.namespace, repo=self.repo, rev=self.rev, path=path, filename=filename)
         return api_endpoint
 
-    def get_model_info(self, endpoint: str = "model_info") -> dict[str, typing.Any] :
-        self.validate_model_fields()
+    def get_base_info(self, endpoint: str) -> dict[str, typing.Any] :
+        # self.validate_model_fields()
         
         api_endpoint: str = self.build_endpoint(endpoint)
         return self.get(api_endpoint)
+
+    def get_model_info(self, endpoint: str = "model_info") -> dict[str, typing.Any] :
+        self.validate_model_fields()
+        
+        return self.get_base_info(endpoint)
+    
+    def get_dataset_info(self, endpoint: str = "dataset_info") -> dict[str, typing.Any] :
+        
+        return self.get_base_info(endpoint)
     
 
-    def model_files_info(self, endpoint:str = "model_files", path: str = "") -> list[dict[str, typing.Any]]:
-        self.validate_model_fields()
+    def get_files_info(self, endpoint: str, path: str = "") -> list[dict[str, typing.Any]]:
         
         api_endpoint: str = self.build_endpoint(endpoint, path=path)
 
@@ -60,9 +71,17 @@ class HuggingFaceApi(Api) :
             for item in response if item.get("type") == "file"
         ]
         return file_infos
+    
+    def get_model_files_info(self, endpoint:str = "model_files", path: str = "") -> list[dict[str, typing.Any]]:
+        self.validate_model_fields()
+        
+        return self.get_files_info(endpoint, path)
+    
+    def get_dataset_files_info(self, endpoint:str = "dataset_files", path: str = "") -> list[dict[str, typing.Any]]:
+        
+        return self.get_files_info(endpoint, path)
 
-
-    def download_file(self, filename: str|list[str], dest_dir: str = "tmp", endpoint: str = "model_file_download") -> str|list[str] :
+    def download_file(self, endpoint: str, filename: str|list[str], dest_dir: str = "tmp") -> str|list[str] :
         file_path: str = ""
         endpoint_temp: str | None = self.ENDPOINT.get(endpoint)
         if not endpoint_temp:
@@ -91,3 +110,9 @@ class HuggingFaceApi(Api) :
             f.write(content.encode())
 
         return file_path
+    
+    def download_model_file(self, filename: str|list[str], dest_dir: str = "tmp", endpoint: str = "model_file_download") -> str|list[str] :
+        return self.download_file(endpoint, filename, dest_dir)
+    
+    def download_dataset_file(self, filename: str|list[str], dest_dir: str = "tmp", endpoint: str = "dataset_file_download") -> str|list[str] :
+        return self.download_file(endpoint, filename, dest_dir)

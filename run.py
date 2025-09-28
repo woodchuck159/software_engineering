@@ -8,6 +8,7 @@ import metric_caller
 import time
 from json_output import build_model_output
 import os
+from classes.github_api import GitHubApi
 from get_model_metrics import get_model_size
 
 import requests
@@ -38,6 +39,16 @@ def validate_log_file_path(path: str) -> bool:
 
 def main() -> int:
     start_time = time.time()
+
+    verbosity = my_variable_value = os.getenv('LOG_LEVEL', None)
+    log_file_location = os.getenv('LOG_FILE', None)
+    gen_ai_key = os.getenv('GEN_AI_STUDIO_API_KEY', None)
+    github_token = os.getenv("GITHUB_TOKEN",None)
+    
+    GitHubApi.verify_token(github_token)
+
+    if (verbosity == None or log_file_location == None or gen_ai_key == None or github_token == None):
+        return 1
     
     log_level_str = os.getenv('LOG_LEVEL')
     log_file_path = os.getenv('LOG_FILE')
@@ -60,10 +71,7 @@ def main() -> int:
         # print("ERROR: GEN_AI_STUDIO_API_KEY environment variable not set.", file=sys.stderr)
         sys.exit(1)
 
-   
 
-
-    logfile = "LOG_FILE.txt"
     parser = argparse.ArgumentParser(
         prog="run",
         description="LLM Model Evaluator",
