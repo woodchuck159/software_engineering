@@ -34,7 +34,7 @@ def rampup_time_metric(filename: str, verbosity: int, log_queue) -> Tuple[float,
     try:
         if verbosity >= 1: # Informational
             log_queue.put(f"[{pid}] [INFO] Calling LLM for ramp-up time on '{os.path.basename(filename)}'...")
-            
+
         llm_response_str = process_file_and_get_response(filename, instruction, "gemma3:27b")
 
         score = 0.0  # Default to 0.0 for failure cases

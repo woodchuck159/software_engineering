@@ -1,7 +1,6 @@
 
 import json
-
-import json
+import sys
 
 def build_model_output(
     name,
@@ -24,8 +23,8 @@ def build_model_output(
         "license_latency": latency["calculate_license_score"],
         "size_score": scores["calculate_size_score"],  
         "size_score_latency": latency["calculate_size_score"],
-       "dataset_and_code_score": scores["dataset_metric"],
-       "dataset_and_code_score_latency": latency["dataset_metric"],
+        "dataset_and_code_score": scores["dataset_metric"],
+        "dataset_and_code_score_latency": latency["dataset_metric"],
         "dataset_quality": scores["dataset_quality"],
         "dataset_quality_latency": latency["dataset_quality"],
         "code_quality": scores["code_quality"],
@@ -34,7 +33,7 @@ def build_model_output(
     #return output
 
     #print to stdout
-    print(json.dumps(output))
+    sys.stdout.write(json.dumps(output) + "\n")
 
 #testing
 if __name__ == "__main__":
