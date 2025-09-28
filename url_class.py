@@ -68,7 +68,7 @@ def parse_hf_dataset_url_repo(url: str) -> str:
 
     return parts[-1]   # last segment is always the repo
 
-def parse_project_file(filepath: str | Path) -> List[ProjectGroup]:
+def parse_project_file(filepath: str) -> List[ProjectGroup]:
     """
     Parse a text file where each line has format:
         code_link,dataset_link,model_link
