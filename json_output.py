@@ -9,27 +9,27 @@ def build_model_output(
     latency
 ):
     output = {
-        "name": name,
-        "category": category,
-        "net_score": scores["net_score"],
-        "net_score_latency": latency["net_score_latency"],
-        "ramp_up_time": scores["rampup_time_metric"],
-        "ramp_up_time_latency": latency["rampup_time_metric"],
-        "bus_factor": scores["bus_factor_metric"],
-        "bus_factor_latency": latency["bus_factor_metric"],
-        "performance_claims": scores["performance_claims_metric"],
-        "performance_claims_latency": latency["performance_claims_metric"],
-        "license": scores["calculate_license_score"],
-        "license_latency": latency["calculate_license_score"],
-        "size_score": scores["calculate_size_score"],  
-        "size_score_latency": latency["calculate_size_score"],
-        "dataset_and_code_score": scores["dataset_metric"],
-        "dataset_and_code_score_latency": latency["dataset_metric"],
-        "dataset_quality": scores["dataset_quality"],
-        "dataset_quality_latency": latency["dataset_quality"],
-        "code_quality": scores["code_quality"],
-        "code_quality_latency": latency["code_quality"]
-    }
+    "name": name,
+    "category": category,
+    "net_score": scores.get("net_score", 0.00),
+    "net_score_latency": latency.get("net_score_latency", 0),
+    "ramp_up_time": scores.get("rampup_time_metric", 0.00),
+    "ramp_up_time_latency": latency.get("rampup_time_metric", 0),
+    "bus_factor": scores.get("bus_factor_metric", 0.00),
+    "bus_factor_latency": latency.get("bus_factor_metric", 0),
+    "performance_claims": scores.get("performance_claims_metric", 0.00),
+    "performance_claims_latency": latency.get("performance_claims_metric", 0),
+    "license": scores.get("calculate_license_score", 0.00),
+    "license_latency": latency.get("calculate_license_score", 0),
+    "size_score": scores.get("calculate_size_score", 0.00),  
+    "size_score_latency": latency.get("calculate_size_score", 0),
+    "dataset_and_code_score": scores.get("dataset_metric", 0.00),
+    "dataset_and_code_score_latency": latency.get("dataset_metric", 0),
+    "dataset_quality": scores.get("dataset_quality", 0.00),
+    "dataset_quality_latency": latency.get("dataset_quality", 0),
+    "code_quality": scores.get("code_quality", 0.00),
+    "code_quality_latency": latency.get("code_quality", 0),
+}
     #return output
 
     #print to stdout
@@ -37,7 +37,7 @@ def build_model_output(
 
 #testing
 if __name__ == "__main__":
-    build_model_output(
+    build_model_output( 
         name="google/gemma-3-270m",
         category="MODEL",
         net_score=0.82,
