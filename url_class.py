@@ -32,6 +32,42 @@ class ProjectGroup:
     model: Optional[Model] = None
 
 
+from typing import Tuple
+from urllib.parse import urlparse
+
+def parse_huggingface_url(url: str) -> Tuple[str, str, str]:
+   
+    parsed = urlparse(url)
+    parts = parsed.path.strip("/").split("/")
+
+    if len(parts) < 2:
+        raise ValueError(f"Invalid Hugging Face URL: {url}")
+
+    namespace = parts[0]
+    repo = parts[1]
+    rev = ""
+
+    # If the URL has /tree/<rev>, capture it
+    if len(parts) >= 4 and parts[2] == "tree":
+        rev = parts[3]
+
+    return namespace, repo, rev
+
+def parse_hf_dataset_url_repo(url: str) -> str:
+    """
+    Extract only the repo (dataset name) from a Hugging Face dataset URL.
+    Example: 
+        https://huggingface.co/datasets/stanfordnlp/imdb -> "imdb"
+        https://huggingface.co/datasets/glue -> "glue"
+    """
+    parsed = urlparse(url)
+    parts = parsed.path.strip("/").split("/")
+
+    if len(parts) < 2 or parts[0] != "datasets":
+        raise ValueError(f"Invalid Hugging Face dataset URL: {url}")
+
+    return parts[-1]   # last segment is always the repo
+
 def parse_project_file(filepath: str | Path) -> List[ProjectGroup]:
     """
     Parse a text file where each line has format:
@@ -62,10 +98,15 @@ def parse_project_file(filepath: str | Path) -> List[ProjectGroup]:
 
             code_link, dataset_link, model_link = parts
 
+            if model_link != None and model_link != '':
+                ns, rp, rev = parse_huggingface_url(model_link) if model_link else ("", "", "")
+            if dataset_link != None and dataset_link != '':
+                data_repo = parse_hf_dataset_url_repo(dataset_link)
+
             group = ProjectGroup(
                 code=Code(code_link) if code_link else None,
-                dataset=Dataset(dataset_link) if dataset_link else None,
-                model=Model(model_link) if model_link else None,
+                dataset=Dataset(dataset_link, namespace="", repo=data_repo, rev="") if dataset_link else None,
+                model=Model(model_link, ns, rp, rev) if model_link else None,
             )
             project_groups.append(group)
 
@@ -86,4 +127,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    url = "https://huggingface.co/openai-community/gpt2"
+    ns, rp = parse_huggingface_url(url)
+    print(f"Namespace: {ns}, Repo: {rp}")
+    # Output: Namespace: openai-community, Repo: gpt2

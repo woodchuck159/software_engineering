@@ -1,0 +1,22 @@
+--- Log started at 2025-09-27 18:27:26 ---
+[WARNING] Skipped line 6: Function 'dataset_quality' not found.
+[WARNING] Skipped line 7: Missing required keys in input dictionary: ['readme']
+[WARNING] Skipped line 8: Missing required keys in input dictionary: ['readme']
+[50512] [INFO] Starting license score calculation for google-bert/bert-base-uncased...
+[50512] [INFO] Fetching repo metadata from: https://api.github.com/repos/google-bert/bert-base-uncased
+[39248] Starting bus factor calculation for 'google-bert/bert-base-uncased'...
+[12520] [INFO] Starting size score calculation for model of 1 bytes...
+[12520] [INFO] Model size: 0.00 GB
+[12520] [INFO] Finished calculation. Average Score=1.00, Time=0.0048s
+[7948] Running PyLint on 'bert'...
+[28420] [INFO] Starting dataset metric calculation for google-bert/bert-base-uncased...
+[7948] [WARNING] Could not find PyLint score line in output for 'https://github.com/google-research/bert'.
+[28420] [INFO] Dataset mention found: False
+[28420] [INFO] Fetching repo contents from root...
+[50512] [CRITICAL ERROR] calculating license score for 'google-bert/bert-base-uncased': GitHub API request failed with 404
+[50512] [INFO] Finished calculation. Score=0.00, Time=13.963s
+[39248] [CRITICAL ERROR] calculating bus factor for 'google-bert/bert-base-uncased': GitHub API request failed with 404
+[39248] Bus factor calculation for 'google-bert/bert-base-uncased' complete. Score: 0.00
+[28420] [INFO] Final check -> Has Dataset: False, Has Code: False
+[28420] [INFO] Finished calculation. Score=0.00, Time=27.428s
+--- Log ended at 2025-09-27 18:27:54 ---
