@@ -65,7 +65,7 @@ class GenAiChatApi(Api):
             return None
 
         except Exception as e:
-            print(f"An error occurred while getting chat completion: {e}")
+            #print(f"An error occurred while getting chat completion: {e}")
             return None
 
 
