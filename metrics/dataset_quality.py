@@ -72,8 +72,8 @@ def dataset_quality(dataset_name: str, verbosity: int, log_queue) -> Tuple[float
             log_queue.put(f"[{pid}] [DEBUG] Failed checks for '{dataset_name}': {', '.join(failed_checks)}")
 
     except Exception as e:
-        # Critical errors should always be logged regardless of verbosity.
-        log_queue.put(f"[{pid}] [CRITICAL ERROR] evaluating dataset '{dataset_name}': {e}")
+        if verbosity >0:
+            log_queue.put(f"[{pid}] [CRITICAL ERROR] evaluating dataset '{dataset_name}': {e}")
         score = 0.0
 
     end_time = time.perf_counter()

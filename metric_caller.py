@@ -18,11 +18,11 @@ def logger_process(log_queue: multiprocessing.Queue, log_file_path: str):
     """
     try:
         with open(log_file_path, 'w', encoding='utf-8') as f:
-            f.write(f"--- Log started at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n")
+           #f.write(f"--- Log started at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n")
             while True:
                 message = log_queue.get()
                 if message is None: # A 'None' message is our signal to stop
-                    f.write(f"--- Log ended at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n")
+                    #f.write(f"--- Log ended at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n")
                     break
                 f.write(f"{message}\n")
                 f.flush() # Ensure messages are written immediately
@@ -68,10 +68,11 @@ def load_available_functions(directory: str, log_queue, script_verbosity: int = 
                     log_queue.put(f"[WARNING] - Could not load '{module_name}': {e}")
     return functions
 
-def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, metrics_directory: str, log_file: str, script_verbosity: int = 1):
+def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, metrics_directory: str, log_file: str):
     """
     Parses a file, runs functions concurrently, and directs all status updates to the log file.
     """
+    script_verbosity = all_args_dict["verbosity"]
     manager = multiprocessing.Manager()
     log_queue = manager.Queue()
     
