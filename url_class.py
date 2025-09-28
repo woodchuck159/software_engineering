@@ -40,8 +40,14 @@ def parse_huggingface_url(url: str) -> Tuple[str, str, str]:
     parsed = urlparse(url)
     parts = parsed.path.strip("/").split("/")
 
-    if len(parts) < 2:
+    if len(parts) < 1:
         raise ValueError(f"Invalid Hugging Face URL: {url}")
+    
+    if len(parts) == 1:
+        repo = parts[0]
+        namespace = url.strip("/").split("-")[0]
+        rev = "main"
+        return namespace, repo, rev
 
     namespace = parts[0]
     repo = parts[1]
