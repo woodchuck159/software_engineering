@@ -1,37 +1,49 @@
---- Log started at 2025-09-28 15:28:50 ---
+--- Log started at 2025-09-28 15:51:30 ---
+[INFO] Discovering functions in './metrics/'...
+[WARNING] - Could not load 'ai_llm_generic_call': module 'metrics.ai_llm_generic_call' has no attribute 'ai_llm_generic_call'
+[INFO]   - Loaded function: 'bus_factor_metric'
+[INFO]   - Loaded function: 'calculate_license_score'
+[INFO]   - Loaded function: 'calculate_size_score'
+[INFO]   - Loaded function: 'code_quality'
+[INFO]   - Loaded function: 'dataset_and_code_present'
+[WARNING] - Could not load 'dataset_quality': No module named 'pandas'
+[INFO]   - Loaded function: 'performance_claims_metric'
+[INFO]   - Loaded function: 'rampup_time_metric'
+[INFO] Reading and parsing tasks from './tasks.txt'...
+[INFO] Queued: bus_factor_metric(...) with weight 3.0
 [WARNING] Skipped line 2: 'calculate_license_score' expects 4 args, but 3 keys were provided.
+[INFO] Queued: calculate_size_score(...) with weight 1.0
+[INFO] Queued: code_quality(...) with weight 2.0
+[INFO] Queued: dataset_and_code_present(...) with weight 3.0
 [WARNING] Skipped line 6: Function 'dataset_quality' not found.
-[28776] [INFO] Starting bus factor check based on README content...
-[28776] [INFO] No mention of contributors found in README -> Score = 0.0
-[28776] [INFO] Finished calculation. Score=0.00, Time=0.003s
-[26872] [INFO] Starting size score calculation for model of 608853227 bytes...
-[26872] [INFO] Model size: 0.57 GB
-[26872] [DEBUG] Raspberry Pi score: 0.0
-[26872] [DEBUG] Jetson Nano score: 0.5
-[26872] [DEBUG] Desktop PC score: 1.0
-[26872] [DEBUG] AWS Server score: 1.0
-[26872] [INFO] Finished calculation. Average Score=0.62, Time=0.0033s
-[33408] Running PyLint on ''...
-[34524] [INFO] Starting dataset-in-readme check...
-[34524] [INFO] Dataset mention found in README: False
-[34524] [INFO] Finished calculation. Score=0.00, Time=0.003s
-[40176] [INFO] Calling LLM for performance claims on 'whisper-tiny_README.md.txt'...
-[14868] [INFO] Calling LLM for ramp-up time on 'whisper-tiny_README.md.txt'...
-[33408] [WARNING] Could not find PyLint score line in output for ''.
-[33408] [DEBUG] PyLint output for '':
+[INFO] Queued: performance_claims_metric(...) with weight 2.0
+[INFO] Queued: rampup_time_metric(...) with weight 3.0
+[INFO] --- Starting all processes ---
+[INFO] --- Collecting results ---
+[7184] [INFO] Starting bus factor check based on README content...
+[7184] [INFO] No mention of contributors found in README -> Score = 0.0
+[7184] [INFO] Finished calculation. Score=0.00, Time=0.002s
+[17940] [INFO] Starting size score calculation for model of 3454102158 bytes...
+[17940] [INFO] Model size: 3.22 GB
+[17940] [DEBUG] Raspberry Pi score: 0.0
+[17940] [DEBUG] Jetson Nano score: 0.0
+[17940] [DEBUG] Desktop PC score: 1.0
+[17940] [DEBUG] AWS Server score: 1.0
+[17940] [INFO] Finished calculation. Average Score=0.50, Time=0.0035s
+[23384] Running PyLint on 'bert'...
+[44556] [INFO] Starting dataset-in-readme check...
+[44556] [INFO] Dataset mention found in README: False
+[44556] [INFO] Finished calculation. Score=0.00, Time=0.002s
+[3324] [INFO] Calling LLM for performance claims on 'bert-base-uncased_README.md.txt'...
+[43428] [INFO] Calling LLM for ramp-up time on 'bert-base-uncased_README.md.txt'...
+[23384] [WARNING] Could not find PyLint score line in output for 'https://github.com/google-research/bert'.
+[23384] [DEBUG] PyLint output for 'https://github.com/google-research/bert':
 ---BEGIN---
-************* Module Command line or configuration file
-Command line or configuration file:1:0: F0001: No module named  (fatal)
+************* Module https://github.com/google-research/bert
+https://github.com/google-research/bert:1:0: F0001: No module named https://github.com/google-research/bert (fatal)
 
 ---END---
-[40176] [WARNING] Could not convert LLM response '##
-I0, which is a00 to.
-The is00 is0,0 is0 is0 is00 is000. The00 is00 is0000.0 is0 is000 is000000.00 is0000000. is000000000 is0b0000000000 is00000000000 is000000000000 is0 is0000000000 is000000000000 is0000000000000000000000000000000' to a float.
-[14868] [WARNING] Could not convert LLM response 'Okay.
-
-This document provides lots of.
-
-model training data. The training dataset used to the model. The dataset is available for. The model is used dataset. The dataset is used in the dataset. The dataset is used in the dataset. The model is used in the dataset. The.
-
-' to a float.
---- Log ended at 2025-09-28 15:28:58 ---
+[3324] [WARNING] Received no response from LLM for performance claims metric.
+[43428] [WARNING] Received no response from LLM for ramp-up time metric.
+[INFO] --- All processes have completed ---
+--- Log ended at 2025-09-28 15:52:02 ---
