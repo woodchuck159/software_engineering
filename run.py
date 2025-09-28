@@ -4,7 +4,6 @@ import subprocess
 import url_class
 import metric_caller
 from collections import defaultdict
-import metric_caller
 import time
 from json_output import build_model_output
 import os
@@ -40,21 +39,17 @@ def validate_log_file_path(path: str) -> bool:
 def main() -> int:
     start_time = time.time()
 
-    verbosity = my_variable_value = os.getenv('LOG_LEVEL', None)
-    log_file_location = os.getenv('LOG_FILE', None)
-    gen_ai_key = os.getenv('GEN_AI_STUDIO_API_KEY', None)
-    github_token = os.getenv("GITHUB_TOKEN",None)
-    
-    GitHubApi.verify_token(github_token)
 
-    if (verbosity == None or log_file_location == None or gen_ai_key == None or github_token == None):
-        return 1
-    
+
+
     log_level_str = os.getenv('LOG_LEVEL')
     log_file_path = os.getenv('LOG_FILE')
     github_token = os.getenv("GITHUB_TOKEN")
     gen_ai_key = os.getenv('GEN_AI_STUDIO_API_KEY') # Used by a child module
 
+
+    GitHubApi.verify_token(github_token)
+    
     if not log_level_str or not log_level_str.isdigit() or int(log_level_str) not in [0, 1, 2]:
         # print("ERROR: LOG_LEVEL environment variable not set or invalid. Must be 0, 1, or 2.", file=sys.stderr)
         sys.exit(1)
@@ -128,7 +123,7 @@ def main() -> int:
             input_dict = {
                 "repo_owner": i.model.namespace,
                 "repo_name": i.model.repo,
-                "verbosity": log_level_str,
+                "verbosity": int(log_level_str),
                 "log_queue": log_file_path,
                 "model_size_bytes": size,
                 "github_str": f"{i.code.link}",  # New parameter for GitHub repo

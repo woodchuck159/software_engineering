@@ -45,7 +45,7 @@ def parse_huggingface_url(url: str) -> Tuple[str, str, str]:
 
     namespace = parts[0]
     repo = parts[1]
-    rev = ""
+    rev = "main"
 
     # If the URL has /tree/<rev>, capture it
     if len(parts) >= 4 and parts[2] == "tree":
@@ -99,7 +99,7 @@ def parse_project_file(filepath: str | Path) -> List[ProjectGroup]:
             code_link, dataset_link, model_link = parts
 
             if model_link != None and model_link != '':
-                ns, rp, rev = parse_huggingface_url(model_link) if model_link else ("", "", "")
+                ns, rp, rev = parse_huggingface_url(model_link) if model_link else ("", "", "main")
             if dataset_link != None and dataset_link != '':
                 data_repo = parse_hf_dataset_url_repo(dataset_link)
 

@@ -10,7 +10,7 @@ project_root = os.path.dirname(current_dir)
 sys.path.append(project_root)
 
 # Now we can import the function from the other file in the 'metrics' directory
-from metrics.ai_llm_generic_call import process_file_and_get_response
+from .ai_llm_generic_call import process_file_and_get_response
 
 def performance_claims_metric(filename: str, verbosity: int, log_queue) -> Tuple[float, float]:
     """
