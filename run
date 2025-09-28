@@ -29,7 +29,8 @@ positional arguments:
   *)
     # Run with URL_FILE
     echo "URL_FILE"
-    python3 ./main.py "$1"
+    python3 ./run.py "$1"
     ;;
 
 esac
+
