@@ -47,6 +47,8 @@ def main() -> int:
     github_token = os.getenv("GITHUB_TOKEN")
     gen_ai_key = os.getenv('GEN_AI_STUDIO_API_KEY') # Used by a child module
 
+    
+
 
     GitHubApi.verify_token(github_token)
     
@@ -65,6 +67,9 @@ def main() -> int:
     if not gen_ai_key:
         # print("ERROR: GEN_AI_STUDIO_API_KEY environment variable not set.", file=sys.stderr)
         sys.exit(1)
+
+    with open(log_file_path, 'w', encoding='utf-8') as f:
+        pass # This creates an empty file
 
 
     parser = argparse.ArgumentParser(
