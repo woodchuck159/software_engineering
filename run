@@ -9,11 +9,27 @@ case "$1" in
   test)
     # Run Test Cases
     echo "Test Cases"
+    python3 ./test.py
     ;;
+
+  -h | --help)
+    echo "
+usage: run [-v | --verbose] [-h | --help] { install, test } | URL_FILE
+positional arguments:
+  install             Install any dependencies needed
+  test                Runs testing suite
+  URL_FILE            Absolute file location of set of URLs
+              
+  options:
+  -h, --help          show this help message
+  -v. --verbose       enable verbose output
+"
+  ;;
 
   *)
     # Run with URL_FILE
     echo "URL_FILE"
+    python3 ./run.py "$1"
     ;;
 
 esac
