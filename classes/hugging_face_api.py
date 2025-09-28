@@ -4,6 +4,7 @@ import requests
 import os
 import tempfile
 from typing import Optional
+from typing import Union
 
 
 class HuggingFaceApi(Api) :
@@ -82,7 +83,7 @@ class HuggingFaceApi(Api) :
         
         return self.get_files_info(endpoint, path)
 
-    def download_file(self, endpoint: str, filename: str|list[str], dest_dir: str = "tmp") -> str|list[str] :
+    def download_file(self, endpoint: str, filename: Union[str, list[str]], dest_dir: str = "tmp") -> Union[str, list[str]]:
         file_path: str = ""
         endpoint_temp: Optional[str] = self.ENDPOINT.get(endpoint)
         if not endpoint_temp:
@@ -112,8 +113,8 @@ class HuggingFaceApi(Api) :
 
         return file_path
     
-    def download_model_file(self, filename: str|list[str], dest_dir: str = "tmp", endpoint: str = "model_file_download") -> str|list[str] :
+    def download_model_file(self, filename: Union[str, list[str]], dest_dir: str = "tmp", endpoint: str = "model_file_download") -> Union[str, list[str]]:
         return self.download_file(endpoint, filename, dest_dir)
     
-    def download_dataset_file(self, filename: str|list[str], dest_dir: str = "tmp", endpoint: str = "dataset_file_download") -> str|list[str] :
+    def download_dataset_file(self, filename: Union[str, list[str]], dest_dir: str = "tmp", endpoint: str = "dataset_file_download") -> Union[str, list[str]]:
         return self.download_file(endpoint, filename, dest_dir)
