@@ -28,7 +28,6 @@ positional arguments:
 
   *)
     # Run with URL_FILE
-    echo "URL_FILE"
     python3 ./run.py "$1"
     ;;
 
