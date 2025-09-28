@@ -2,6 +2,7 @@ import requests
 import configparser
 import typing
 from typing import TextIO
+from typing import Optional
 
 
 class Api :
@@ -17,10 +18,10 @@ class Api :
 
     def __init__(self, _base_url: str) :
         self.base_url = _base_url
-        self.__bearer_token: str | None = None
+        self.__bearer_token: Optional[str] = None
 
     @property
-    def bearer_token(self) -> str | None :
+    def bearer_token(self) ->  Optional[str] :
         return self.__bearer_token
 
 
@@ -28,7 +29,7 @@ class Api :
         self.__bearer_token = token
 
     def set_bearer_token_from_file(self, filepath: str, section: str = "auth", key: str = "bearer_token") :
-        token: str | None = None
+        token: Optional[str] = None
 
         if filepath.endswith(".ini"):
             config: configparser.ConfigParser = configparser.ConfigParser()
@@ -48,10 +49,10 @@ class Api :
         return f"{self.base_url.rstrip('/')}/{endpoint.lstrip('/')}"
 
 
-    def get(self, endpoint: str = "", payload: dict[str, typing.Any] | None = {}) -> typing.Any :
+    def get(self, endpoint: str = "", payload: Optional[dict[str, typing.Any]] = {}) -> typing.Any :
         url : str = self.build_url(endpoint)
         
-        headers: dict[str, typing.Any] | None = {}
+        headers: Optional[dict[str, typing.Any]] = {}
         if self.__bearer_token:
             headers["Authorization"] = f"Bearer {self.__bearer_token}"
 
