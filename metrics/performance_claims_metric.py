@@ -35,7 +35,7 @@ def performance_claims_metric(filename: str, verbosity: int, log_queue) -> Tuple
         if verbosity >= 1: # Informational
             log_queue.put(f"[{pid}] [INFO] Calling LLM for performance claims on '{os.path.basename(filename)}'...")
             
-        llm_response_str = process_file_and_get_response(filename, instruction, "gemma3:27b")
+        llm_response_str = process_file_and_get_response(filename, instruction, "gemma3:1b")
 
         score = 0.0  # Default to 0.0 for failure cases
 
