@@ -33,6 +33,7 @@ def build_model_output(
     #return output
 
     #print to stdout
+    print(json.dumps(output))
     sys.stdout.write(json.dumps(output) + "\n")
 
 #testing
