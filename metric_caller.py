@@ -47,13 +47,12 @@ def process_worker(target_func, result_queue, log_queue, weight, func_name, *arg
         log_queue.put(f"[WORKER CRASH] Process for '{func_name}' failed critically: {e}")
         result_queue.put((0.0, time_taken, float(weight), func_name))
 
-def load_available_functions(directory: str, log_queue, script_verbosity: int = 1) -> dict:
+def load_available_functions(directory: str) -> dict:
     """
     Discovers and loads metric functions, sending output to the provided log queue.
     """
     functions = {}
-    if script_verbosity > 0:
-        log_queue.put(f"[INFO] Discovering functions in './{directory}/'...")
+
     for filename in os.listdir(directory):
         if filename.endswith('.py') and not filename.startswith('__'):
             module_name = filename[:-3]
@@ -61,14 +60,11 @@ def load_available_functions(directory: str, log_queue, script_verbosity: int = 
                 module = importlib.import_module(f"{directory}.{module_name}")
                 func = getattr(module, module_name)
                 functions[module_name] = func
-                if script_verbosity > 0:
-                    log_queue.put(f"[INFO]   - Loaded function: '{module_name}'")
             except (ImportError, AttributeError) as e:
-                if script_verbosity > 0:
-                    log_queue.put(f"[WARNING] - Could not load '{module_name}': {e}")
+                pass
     return functions
 
-def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, metrics_directory: str, log_file: str):
+def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, available_functions: dict, log_file: str):
     """
     Parses a file, runs functions concurrently, and directs all status updates to the log file.
     """
@@ -80,7 +76,6 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, metrics
     logger.start()
 
     # Load available functions and log the process
-    available_functions = load_available_functions(metrics_directory, log_queue, script_verbosity)
 
     all_args_dict['log_queue'] = log_queue
 

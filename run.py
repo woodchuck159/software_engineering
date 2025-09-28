@@ -104,7 +104,7 @@ def main() -> int:
     # --- dispatch logic ---
     if args.target == "install":
         # if args.verbose:
-        #     print("Verbose: Installing dependencies...")
+        #     print("Verbose: Installing dependencies...")  
         print("Installing dependencies...")
         subprocess.check_call([sys.executable, "-m", "pip", "install", "--user", "-r", "requirements.txt"])
 
@@ -116,6 +116,7 @@ def main() -> int:
     else:
         #Running URL FILE
         project_groups: list[url_class.ProjectGroup] = url_class.parse_project_file(args.target)
+        x = metric_caller.load_available_functions("metrics")
         for i in project_groups:
             
             size = get_model_size(i.model.namespace, i.model.repo, i.model.rev)
@@ -132,8 +133,8 @@ def main() -> int:
                 "filename" : filename
             }
 
-            #x = metric_caller.load_available_functions("metrics")
-            scores,latency = metric_caller.run_concurrently_from_file("./tasks.txt",input_dict,"metrics",log_file_path)
+            
+            scores,latency = metric_caller.run_concurrently_from_file("./tasks.txt",input_dict,x,log_file_path)
             
             build_model_output(f"{i.model.repo}","model",scores,latency)
     
