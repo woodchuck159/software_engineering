@@ -9,31 +9,30 @@ def build_model_output(
     latency
 ):
     output = {
-    "name": name,
-    "category": category,
-    "net_score": scores.get("net_score", 0.00),
-    "net_score_latency": latency.get("net_score_latency", 0),
-    "ramp_up_time": scores.get("rampup_time_metric", 0.00),
-    "ramp_up_time_latency": latency.get("rampup_time_metric", 0),
-    "bus_factor": scores.get("bus_factor_metric", 0.00),
-    "bus_factor_latency": latency.get("bus_factor_metric", 0),
-    "performance_claims": scores.get("performance_claims_metric", 0.00),
-    "performance_claims_latency": latency.get("performance_claims_metric", 0),
-    "license": scores.get("calculate_license_score", 0.00),
-    "license_latency": latency.get("calculate_license_score", 0),
-    "size_score": scores.get("calculate_size_score", 0.00),  
-    "size_score_latency": latency.get("calculate_size_score", 0),
-    "dataset_and_code_score": scores.get("dataset_metric", 0.00),
-    "dataset_and_code_score_latency": latency.get("dataset_metric", 0),
-    "dataset_quality": scores.get("dataset_quality", 0.00),
-    "dataset_quality_latency": latency.get("dataset_quality", 0),
-    "code_quality": scores.get("code_quality", 0.00),
-    "code_quality_latency": latency.get("code_quality", 0),
+    "name":name,
+    "category":category.upper(),
+    "net_score":scores.get("net_score", 0.00),
+    "net_score_latency":latency.get("net_score_latency", 0),
+    "ramp_up_time":scores.get("rampup_time_metric", 0.00),
+    "ramp_up_time_latency":latency.get("rampup_time_metric", 0),
+    "bus_factor":scores.get("bus_factor_metric", 0.00),
+    "bus_factor_latency":latency.get("bus_factor_metric", 0),
+    "performance_claims":scores.get("performance_claims_metric", 0.00),
+    "performance_claims_latency":latency.get("performance_claims_metric", 0),
+    "license":scores.get("calculate_license_score", 0.00),
+    "license_latency":latency.get("calculate_license_score", 0),
+    "size_score":scores.get("calculate_size_score", 0.00),  
+    "size_score_latency":latency.get("calculate_size_score", 0),
+    "dataset_and_code_score":scores.get("dataset_metric", 0.00),
+    "dataset_and_code_score_latency":latency.get("dataset_metric", 0),
+    "dataset_quality":scores.get("dataset_quality", 0.00),
+    "dataset_quality_latency":latency.get("dataset_quality", 0),
+    "code_quality":scores.get("code_quality", 0.00),
+    "code_quality_latency":latency.get("code_quality", 0),
 }
     #return output
 
     #print to stdout
-    print(json.dumps(output))
     sys.stdout.write(json.dumps(output) + "\n")
 
 #testing
