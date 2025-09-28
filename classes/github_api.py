@@ -1,4 +1,4 @@
-from api import Api
+from .api import Api
 import typing
 import requests
 from os import getenv

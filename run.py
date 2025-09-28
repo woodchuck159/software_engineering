@@ -9,7 +9,7 @@ import time
 from json_output import build_model_output
 import os
 from classes.github_api import GitHubApi
-from get_model_metrics import get_model_size
+from get_model_metrics import get_model_size, get_model_README
 
 import requests
 
@@ -123,6 +123,7 @@ def main() -> int:
         for i in project_groups:
             
             size = get_model_size(i.model.namespace, i.model.repo, i.model.rev)
+            filename = get_model_README(i.model.namespace, i.model.repo, i.model.rev)
 
             input_dict = {
                 "repo_owner": i.model.namespace,
@@ -132,7 +133,7 @@ def main() -> int:
                 "model_size_bytes": size,
                 "github_str": f"{i.code.link}",  # New parameter for GitHub repo
                 "dataset_name": f"{i.dataset.repo}",  # New parameter for dataset name
-                "filename" : "README FILE PATH"
+                "filename" : filename
             }
 
             x = metric_caller.load_available_functions("metrics")
@@ -147,7 +148,6 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-
     main()
 
 
