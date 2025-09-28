@@ -165,7 +165,7 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, metrics
     scores_dictionary['net_score'] = round(net_score,2)
 
     concurrent_end_time = time.perf_counter()
-    times_dictionary["net_score_latency"] = concurrent_end_time - concurrent_start_time
+    times_dictionary["net_score_latency"] = round((concurrent_end_time - concurrent_start_time)*1000)
 
     for p in processes: p.join()
     
