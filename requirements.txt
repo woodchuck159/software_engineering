@@ -1,1 +1,5 @@
 requests
+datasets
+huggingface-hub
+pandas
+pylint
