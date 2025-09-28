@@ -3,6 +3,7 @@ import typing
 import requests
 import os
 import tempfile
+from typing import Optional
 
 
 class HuggingFaceApi(Api) :
@@ -39,7 +40,7 @@ class HuggingFaceApi(Api) :
         return True
 
     def build_endpoint(self, endpoint: str, path: str = "", filename: str = "") -> str:
-        endpoint_temp: str | None = self.ENDPOINT.get(endpoint)
+        endpoint_temp: Optional[str] = self.ENDPOINT.get(endpoint)
         if not endpoint_temp:
             raise ValueError(f"Invalid Endpoint: '{endpoint_temp}' ")
         api_endpoint: str = endpoint_temp.format(namespace=self.namespace, repo=self.repo, rev=self.rev, path=path, filename=filename)
@@ -83,7 +84,7 @@ class HuggingFaceApi(Api) :
 
     def download_file(self, endpoint: str, filename: str|list[str], dest_dir: str = "tmp") -> str|list[str] :
         file_path: str = ""
-        endpoint_temp: str | None = self.ENDPOINT.get(endpoint)
+        endpoint_temp: Optional[str] = self.ENDPOINT.get(endpoint)
         if not endpoint_temp:
             raise ValueError(f"Invalid Endpoint: '{endpoint_temp}' ")
         
