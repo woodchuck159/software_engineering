@@ -134,7 +134,7 @@ def main() -> int:
             #x = metric_caller.load_available_functions("metrics")
             scores,latency = metric_caller.run_concurrently_from_file("./tasks.txt",input_dict,"metrics",log_file_path)
             
-            build_model_output(f"{i.model.namespace}/{i.model.repo}","model",scores,latency)
+            build_model_output(f"{i.model.repo}","model",scores,latency)
     
     return 0
 
