@@ -4,5 +4,5 @@ calculate_size_score(model_size_bytes, verbosity, log_queue) 1
 code_quality(github_str, verbosity, log_queue) 1
 dataset_metric(repo_owner, repo_name, github_token, verbosity, log_queue) 1
 dataset_quality(dataset_name, verbosity, log_queue) 1
-performance_claims_metric(github_str, github_token, verbosity, log_queue) 1
-rampup_time_metric(github_str, github_token, verbosity, log_queue) 1
+performance_claims_metric(filename, verbosity, log_queue) 1
+rampup_time_metric(filename, verbosity, log_queue) 1
