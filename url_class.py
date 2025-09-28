@@ -104,9 +104,9 @@ def parse_project_file(filepath: str | Path) -> List[ProjectGroup]:
                 data_repo = parse_hf_dataset_url_repo(dataset_link)
 
             group = ProjectGroup(
-                code=Code(code_link) if code_link else None,
-                dataset=Dataset(dataset_link, namespace="", repo=data_repo, rev="") if dataset_link else None,
-                model=Model(model_link, ns, rp, rev) if model_link else None,
+                code=Code(code_link),
+                dataset=Dataset(dataset_link, namespace="", repo=data_repo, rev=""),
+                model=Model(model_link, ns, rp, rev),
             )
             project_groups.append(group)
 
