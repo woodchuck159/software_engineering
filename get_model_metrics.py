@@ -22,4 +22,3 @@ def get_model_README(namespace: str, repo: str, rev: str = "main") -> str:
 
 if __name__ == "__main__":
     metrics = get_model_README("openai-community", "gpt2")
-
