@@ -128,7 +128,7 @@ def parse_project_file(filepath: str) -> List[ProjectGroup]:
             if model_link != None and model_link != '':
                 ns, rp, rev = parse_huggingface_url(model_link) if model_link else ("", "", "main")
             if dataset_link != None and dataset_link != '':
-                data_repo = parse_hf_dataset_url_repo(dataset_link)
+                data_repo = parse_dataset_url(dataset_link)
 
             group = ProjectGroup(
                 code=Code(code_link),
