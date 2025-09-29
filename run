@@ -8,7 +8,6 @@ case "$1" in
 
   test)
     # Run Test Cases
-    echo "Test Cases"
     python3 ./run.py test
     ;;
 
