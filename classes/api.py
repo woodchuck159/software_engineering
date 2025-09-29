@@ -14,7 +14,7 @@ class Api :
         bearer_token (str | None): Optional bearer token for authentication.
     """
 
-    _TIMEOUT : float = 5.0
+    _TIMEOUT : float = 15.0
 
     def __init__(self, _base_url: str) :
         self.base_url = _base_url
