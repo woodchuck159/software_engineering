@@ -44,7 +44,7 @@ def process_worker(target_func, result_queue, log_queue, weight, func_name, *arg
     except Exception as e:
         time_taken = time.perf_counter() - start_time
         # This is a fallback for critical failures in the worker itself.
-        log_queue.put(f"[WORKER CRASH] Process for '{func_name}' failed critically: {e}")
+        #log_queue.put(f"[WORKER CRASH] Process for '{func_name}' failed critically: {e}")
         result_queue.put((0.0, time_taken, float(weight), func_name))
 
 def load_available_functions(directory: str) -> dict:
@@ -93,13 +93,13 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, availab
             if not line: continue
             match = line_pattern.match(line)
             if not match:
-                log_queue.put(f"[WARNING] Skipped line {i}: Could not parse syntax: '{line}'.")
+                #log_queue.put(f"[WARNING] Skipped line {i}: Could not parse syntax: '{line}'.")
                 continue
 
             func_name, keys_str, weight_str = match.groups()
             
             if func_name not in available_functions:
-                log_queue.put(f"[WARNING] Skipped line {i}: Function '{func_name}' not found.")
+                #log_queue.put(f"[WARNING] Skipped line {i}: Function '{func_name}' not found.")
                 continue
 
             target_func = available_functions[func_name]
@@ -110,12 +110,12 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, availab
             provided_count = len(required_keys)
 
             if provided_count != expected_count:
-                log_queue.put(f"[WARNING] Skipped line {i}: '{func_name}' expects {expected_count} args, but {provided_count} keys were provided.")
+                #log_queue.put(f"[WARNING] Skipped line {i}: '{func_name}' expects {expected_count} args, but {provided_count} keys were provided.")
                 continue
             
             if not all(key in all_args_dict for key in required_keys):
                 missing = [key for key in required_keys if key not in all_args_dict]
-                log_queue.put(f"[WARNING] Skipped line {i}: Missing required keys in input dictionary: {missing}")
+                #log_queue.put(f"[WARNING] Skipped line {i}: Missing required keys in input dictionary: {missing}")
                 continue
 
             resolved_args = [all_args_dict[key] for key in required_keys]
