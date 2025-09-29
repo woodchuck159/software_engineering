@@ -1,44 +1,97 @@
 import os
 import time
-from typing import Tuple, Dict, Any, List
+import shutil
+import stat
+import tempfile
+import subprocess
+from typing import Tuple, List
 import pandas as pd
 from datasets import load_dataset
 
+
+def _remove_readonly(func, path, _):
+    """Helper to clear readonly flag on Windows when deleting .git files."""
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
+
 def dataset_quality(dataset_name: str, verbosity: int, log_queue) -> Tuple[float, float]:
     """
-    Evaluates the quality of a Hugging Face dataset and returns a score and execution time.
+    Evaluates the quality of a Hugging Face dataset or a GitHub repo dataset.
+    Returns a quality score and execution time.
 
     Args:
-        dataset_name (str): Hugging Face dataset name (e.g., "imdb").
-        verbosity (int): The verbosity level (0=silent, 1=info, 2=debug).
-        log_queue (multiprocessing.Queue): The queue for centralized logging.
-        split (str): Which split to evaluate ("train", "test", etc.).
+        dataset_name (str): Hugging Face dataset name (e.g., "imdb")
+                           OR GitHub repo URL (e.g., "https://github.com/zalandoresearch/fashion-mnist").
+        verbosity (int): 0 = silent, 1 = info, 2 = debug.
+        log_queue (multiprocessing.Queue): Centralized log queue.
 
     Returns:
-        A tuple containing:
-        - The dataset quality score (0.0 to 1.0), or -1.0 on error.
-        - The total time spent (float).
+        Tuple[float, float]: (dataset quality score, execution time in seconds).
     """
     start_time = time.perf_counter()
     pid = os.getpid()
-    score = 0.0  # Default score for any failure
+    score = 0.0  # default for failures
     split: str = "train"
 
     try:
-        if verbosity >= 1:
-            log_queue.put(f"[{pid}] Loading dataset '{dataset_name}' (split: {split})...")
-        
-        # 1. Load dataset into Pandas
-        hf_dataset = load_dataset(dataset_name, split=split)
-        df = hf_dataset.to_pandas()
+        df = None
 
+        # --- Case 1: GitHub repo ---
+        if dataset_name.startswith("http") and "github.com" in dataset_name:
+            tmp_dir = tempfile.mkdtemp()
+            if verbosity >= 1:
+                log_queue.put(f"[{pid}] Cloning GitHub repo {dataset_name} into {tmp_dir}...")
+
+            subprocess.run(
+                ["git", "clone", "--depth", "1", dataset_name, tmp_dir],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+
+            # Try to detect a dataset file inside the repo
+            candidates = []
+            for root, _, files in os.walk(tmp_dir):
+                for f in files:
+                    if f.endswith((".csv", ".json", ".parquet")):
+                        candidates.append(os.path.join(root, f))
+
+            if not candidates:
+                raise ValueError(f"No supported dataset file found in GitHub repo: {dataset_name}")
+
+            dataset_file = candidates[0]
+            if verbosity >= 1:
+                log_queue.put(f"[{pid}] Found dataset file {dataset_file}")
+
+            if dataset_file.endswith(".csv"):
+                df = pd.read_csv(dataset_file)
+            elif dataset_file.endswith(".json"):
+                df = pd.read_json(dataset_file, lines=True)
+            elif dataset_file.endswith(".parquet"):
+                df = pd.read_parquet(dataset_file)
+
+            # Safe cleanup
+            try:
+                shutil.rmtree(tmp_dir, onerror=_remove_readonly)
+            except Exception as e:
+                if verbosity >= 1:
+                    log_queue.put(f"[{pid}] [WARNING] Failed to cleanup {tmp_dir}: {e}")
+
+        # --- Case 2: Hugging Face dataset ---
+        else:
+            if verbosity >= 1:
+                log_queue.put(f"[{pid}] Loading dataset '{dataset_name}' (split: {split})...")
+            hf_dataset = load_dataset(dataset_name, split=split)
+            df = hf_dataset.to_pandas()
+
+        # --- Run quality checks ---
         if verbosity >= 1:
-            log_queue.put(f"[{pid}] Dataset '{dataset_name}' loaded with {len(df)} rows. Starting checks...")
+            log_queue.put(f"[{pid}] Dataset loaded with {len(df)} rows. Starting checks...")
 
         passed_checks: List[str] = []
         failed_checks: List[str] = []
 
-        # 2. Define basic quality checks
         checks = {
             "row_count > 0": len(df) > 0,
             "no_missing_values": df.isnull().sum().sum() == 0,
@@ -46,37 +99,53 @@ def dataset_quality(dataset_name: str, verbosity: int, log_queue) -> Tuple[float
         }
 
         if "text" in df.columns:
-            checks["no_empty_text"] = (df["text"].str.strip() != "").all()
+            checks["no_empty_text"] = (df["text"].astype(str).str.strip() != "").all()
 
         if "label" in df.columns:
             value_counts = df["label"].value_counts(normalize=True)
             checks["balanced_labels"] = (value_counts.min() >= 0.05)
 
-        # 3. Run checks
         for check, passed in checks.items():
             if passed:
                 passed_checks.append(check)
             else:
                 failed_checks.append(check)
-        
-        # 4. Calculate final score
-        if checks:
-            score = len(passed_checks) / len(checks)
-        else:
-            score = 0.0 # No checks were run
+
+        score = len(passed_checks) / len(checks) if checks else 0.0
 
         if verbosity >= 1:
-            log_queue.put(f"[{pid}] Quality check for '{dataset_name}' complete. Passed: {len(passed_checks)}/{len(checks)}. Score: {score:.2f}")
-        
+            log_queue.put(
+                f"[{pid}] Quality check complete. "
+                f"Passed: {len(passed_checks)}/{len(checks)}. Score: {score:.2f}"
+            )
         if verbosity >= 2 and failed_checks:
-            log_queue.put(f"[{pid}] [DEBUG] Failed checks for '{dataset_name}': {', '.join(failed_checks)}")
+            log_queue.put(f"[{pid}] [DEBUG] Failed checks: {', '.join(failed_checks)}")
 
     except Exception as e:
-        if verbosity >0:
+        if verbosity > 0:
             log_queue.put(f"[{pid}] [CRITICAL ERROR] evaluating dataset '{dataset_name}': {e}")
         score = 0.0
 
     end_time = time.perf_counter()
     time_taken = end_time - start_time
-    
     return score, time_taken
+
+
+from queue import SimpleQueue
+from dataset_quality import dataset_quality   # <-- adjust import if needed
+
+
+if __name__ == "__main__":
+    log_queue = SimpleQueue()
+
+    # --- Hugging Face test ---
+    hf_dataset = "imdb"  # HF datasets expect just the repo name
+    hf_score, hf_time = dataset_quality(hf_dataset, verbosity=1, log_queue=log_queue)
+    print(f"Hugging Face dataset test ({hf_dataset}):")
+    print(f"  Score: {hf_score:.2f}, Time: {hf_time:.2f}s\n")
+
+    # --- GitHub test ---
+    gh_dataset = "https://github.com/zalandoresearch/fashion-mnist"
+    gh_score, gh_time = dataset_quality(gh_dataset, verbosity=1, log_queue=log_queue)
+    print(f"GitHub dataset test ({gh_dataset}):")
+    print(f"  Score: {gh_score:.2f}, Time: {gh_time:.2f}s\n")
