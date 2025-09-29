@@ -7,6 +7,40 @@ import configparser
 from typing import Optional
 
 class GitHubApi(Api) :
+    """
+    GitHubApi provides methods for interacting with the GitHub REST API.
+    This class allows authentication, repository content retrieval, reading README files,
+    and fetching pull requests for a given repository. It extends the base Api class
+    to provide GitHub-specific endpoints and logic.
+
+    Constants:
+    ----------
+    BASE_URL (str): The base URL for the GitHub API.
+    ENDPOINT (Dict[str, str]): Dictionary mapping logical endpoint names to URL paths.
+
+    Attributes:
+    -----------
+    owner (str): The owner of the repository.
+    repo (str): The name of the repository.
+    rev (str): The branch or revision (default: "main").
+
+    Methods:
+    --------
+    __init__(owner, _repo, _rev="main", env_var=None):
+        Initializes the GitHubApi instance with repository details.
+    verify_token(github_token):
+        Verifies the provided GitHub token by making an authenticated request.
+    build_endpoint(endpoint, path="", filename=""):
+        Constructs the API endpoint URL with provided parameters.
+    set_bearer_token_from_env(var_name="GITHUB_TOKEN"):
+        Sets the bearer token for authentication from an environment variable.
+    get_repo_pulls(state="all", endpoint="pull_requests"):
+        Retrieves pull requests for the repository with the specified state.
+    
+    # GitHubApi: Implements GitHub-specific API interactions.
+    """
+
+
     BASE_URL: str = "https://api.github.com"
     ENDPOINT: typing.Dict[str, str] = {
         "verify_token": "/user",

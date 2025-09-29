@@ -9,9 +9,30 @@ class Api :
     """
     A simple API client for making GET requests to a specified base URL.
     
-    Attributes:
+    Constants
+    ---------
+        _TIMEOUT: The timeout period in seconds for an https request
+
+    Attributes
+    -----------
         base_url (str): The base URL for the API.
         bearer_token (str | None): Optional bearer token for authentication.
+
+    Methods
+    -------
+    bearer_token()
+        gets the bearer token of the object to be used in requests
+    set_bearer_toke(token:str)
+        sets the bearer token
+    set_bearer_token_from_file(filepath:str,sections:str,key:str)
+        sets the bearer token read from an external file
+    build_url(endpoint:str)
+        Constructs a full URL by combining the base URL with the specified endpoint.
+    get(endpoint:str, payload:Optional[dict[str, typing.Any]])
+        Sends a GET request to the specified endpoint with optional query parameters. Returns the response as JSON if possible, otherwise as text.
+    post(endpoint:str, payload:dict[str, str])
+        Sends a POST request to the specified endpoint with a JSON payload. Returns the response as JSON.
+
     """
 
     _TIMEOUT : float = 15.0

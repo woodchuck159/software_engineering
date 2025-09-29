@@ -8,6 +8,51 @@ from typing import Union
 
 
 class HuggingFaceApi(Api) :
+    """
+    A client for interacting with the Hugging Face API, providing methods to retrieve model and dataset information,
+    list files, and download files from Hugging Face repositories.
+
+    Constants:
+    ----------
+    BASE_URL (str): The base URL for the Hugging Face API.
+    ENDPOINT (Dict[str, str]): Dictionary mapping endpoint names to their URL templates.
+
+    Attributes:
+    ----------
+    namespace (str): The namespace (user or organization) of the Hugging Face repository.
+    repo (str): The name of the model or dataset repository.
+    rev (str): The revision (branch, tag, or commit) to use, defaults to "main".
+    
+    Methods:
+    --------
+    __init__(_namespace: str, _repo: str, _rev: str = "main"):
+        Initializes the HuggingFaceApi instance with the given namespace, repo, and revision.
+    set_bearer_token_from_file(filepath: str, section: str = "huggingface", key: str = "bearer_token"):
+        Loads the bearer token from a configuration file for authentication.
+    validate_model_fields() -> bool:
+        Validates that the namespace, repo, and rev fields are set.
+    build_endpoint(endpoint: str, path: str = "", filename: str = "") -> str:
+        Constructs the API endpoint URL using the provided parameters.
+    get_base_info(endpoint: str) -> dict[str, Any]:
+        Retrieves base information from the specified endpoint.
+    get_model_info(endpoint: str = "model_info") -> dict[str, Any]:
+        Fetches metadata about the specified model repository.
+    get_dataset_info(endpoint: str = "dataset_info") -> dict[str, Any]:
+        Fetches metadata about the specified dataset repository.
+    get_files_info(endpoint: str, path: str = "") -> list[dict[str, Any]]:
+        Lists files in the specified model or dataset repository path.
+    get_model_files_info(endpoint: str = "model_files", path: str = "") -> list[dict[str, Any]]:
+        Lists files in the model repository.
+    get_dataset_files_info(endpoint: str = "dataset_files", path: str = "") -> list[dict[str, Any]]:
+        Lists files in the dataset repository.
+    download_file(endpoint: str, filename: Union[str, list[str]], dest_dir: str = "tmp") -> Union[str, list[str]]:
+        Downloads a file or list of files from the specified endpoint to the destination directory.
+    download_model_file(filename: Union[str, list[str]], dest_dir: str = "tmp", endpoint: str = "model_file_download") -> Union[str, list[str]]:
+        Downloads a model file or files from the model repository.
+    download_dataset_file(filename: Union[str, list[str]], dest_dir: str = "tmp", endpoint: str = "dataset_file_download") -> Union[str, list[str]]:
+        Downloads a dataset file or files from the dataset repository.
+    """
+    
     BASE_URL: str = "https://huggingface.co"
     ENDPOINT: typing.Dict[str, str] = {
         "model_info": "api/models/{namespace}/{repo}",
