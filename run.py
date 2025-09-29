@@ -8,7 +8,7 @@ import time
 from json_output import build_model_output
 import os
 from classes.github_api import GitHubApi
-from get_model_metrics import get_model_size, get_model_README
+from get_model_metrics import get_model_size, get_model_README, get_model_license
 
 import requests
 
@@ -121,6 +121,7 @@ def main() -> int:
             
             size = get_model_size(i.model.namespace, i.model.repo, i.model.rev)
             filename = get_model_README(i.model.namespace, i.model.repo, i.model.rev)
+            license = get_model_license(i.model.namespace, i.model.repo, i.model.rev)
 
             input_dict = {
                 "repo_owner": i.model.namespace,
@@ -130,7 +131,8 @@ def main() -> int:
                 "model_size_bytes": size,
                 "github_str": f"{i.code.link}",  # New parameter for GitHub repo
                 "dataset_name": f"{i.dataset.repo}",  # New parameter for dataset name
-                "filename" : filename
+                "filename" : filename,
+                "license" : license
             }
 
             
