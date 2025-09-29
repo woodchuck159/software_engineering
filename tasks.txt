@@ -4,5 +4,4 @@ calculate_size_score(model_size_bytes, verbosity, log_queue) 1
 code_quality(github_str, verbosity, log_queue) 2
 dataset_and_code_present(filename, verbosity, log_queue) 3
 dataset_quality(dataset_name, verbosity, log_queue) 2
-performance_claims_metric(filename, verbosity, log_queue) 2
-rampup_time_metric(filename, verbosity, log_queue) 3
+evaluate_readme_metrics(filename, verbosity, log_queue) 2

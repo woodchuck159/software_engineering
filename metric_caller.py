@@ -18,41 +18,51 @@ def logger_process(log_queue: multiprocessing.Queue, log_file_path: str):
     """
     try:
         with open(log_file_path, 'w', encoding='ASCII') as f:
-           #f.write(f"--- Log started at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n")
             while True:
                 message = log_queue.get()
                 if message is None: # A 'None' message is our signal to stop
-                    #f.write(f"--- Log ended at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n")
                     break
                 f.write(f"{message}\n")
                 f.flush() # Ensure messages are written immediately
     except Exception as e:
         pass
-        # This print is a fallback for a critical logger failure
-        #print(f"[Logger Process Error] An error occurred: {e}")
-
 
 def process_worker(target_func, result_queue, log_queue, weight, func_name, *args):
     """
     Worker that executes the target function and handles any exceptions,
-    returning a score of 0.0 upon failure.
+    returning a score of 0.0 upon failure. It has special handling for
+    functions that return multiple scores.
     """
     start_time = time.perf_counter()
     try:
-        score, time_taken = target_func(*args)
-        result_queue.put((score, float(time_taken), float(weight), func_name))
+        # Execute the target function
+        result = target_func(*args)
+        
+        # Special handling for the combined readme metric
+        if func_name == "evaluate_readme_metrics":
+            perf_score, ramp_score, time_taken = result
+            # Put a tuple of scores as the 'score' item on the queue
+            result_queue.put(((perf_score, ramp_score), float(time_taken), float(weight), func_name))
+        else:
+            # Standard handling for all other metrics
+            score, time_taken = result
+            result_queue.put((score, float(time_taken), float(weight), func_name))
+
     except Exception as e:
         time_taken = time.perf_counter() - start_time
-        # This is a fallback for critical failures in the worker itself.
         log_queue.put(f"[WORKER CRASH] Process for '{func_name}' failed critically: {e}")
-        result_queue.put((0.0, time_taken, float(weight), func_name))
+        
+        # Put appropriate failure scores on the queue
+        if func_name == "evaluate_readme_metrics":
+            result_queue.put(((0.0, 0.0), time_taken, float(weight), func_name))
+        else:
+            result_queue.put((0.0, time_taken, float(weight), func_name))
 
 def load_available_functions(directory: str) -> dict:
     """
-    Discovers and loads metric functions, sending output to the provided log queue.
+    Discovers and loads metric functions from a given directory.
     """
     functions = {}
-
     for filename in os.listdir(directory):
         if filename.endswith('.py') and not filename.startswith('__'):
             module_name = filename[:-3]
@@ -68,14 +78,12 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, availab
     """
     Parses a file, runs functions concurrently, and directs all status updates to the log file.
     """
-    script_verbosity = all_args_dict["verbosity"]
+    script_verbosity = all_args_dict.get("verbosity_level", 1) # Default to 1 if not provided
     manager = multiprocessing.Manager()
     log_queue = manager.Queue()
     
     logger = multiprocessing.Process(target=logger_process, args=(log_queue, log_file))
     logger.start()
-
-    # Load available functions and log the process
 
     all_args_dict['log_queue'] = log_queue
 
@@ -147,28 +155,41 @@ def run_concurrently_from_file(tasks_filename: str, all_args_dict: dict, availab
     
     for _ in range(len(processes)):
         score, time_taken, weight, func_name = results_queue.get()
-        scores_dictionary[func_name] = score
-        times_dictionary[func_name] = round(time_taken * 1000)
-        if func_name != "calculate_size_score":
-            weighted_score_sum += score * weight
+        
+        # --- NEW LOGIC: Handle the combined readme metric ---
+        if func_name == "evaluate_readme_metrics":
+            perf_score, ramp_score = score # Unpack the tuple of scores
+            scores_dictionary["performance_claims_metric"] = perf_score
+            scores_dictionary["rampup_time_metric"] = ramp_score
+            times_dictionary["performance_claims_metric"] = round(time_taken * 1000)
+            times_dictionary["rampup_time_metric"] = round(time_taken * 1000)
+            # Add both scores to the weighted sum
+            weighted_score_sum += (perf_score + ramp_score) * weight
+        elif func_name == "calculate_size_score":
+            scores_dictionary[func_name] = score
+            times_dictionary[func_name] = round(time_taken * 1000)
+            # Calculate average for the weighted sum
+            weighted_score_sum += (sum(score.values()) / len(score) if score and isinstance(score, dict) else 0.0) * weight
         else:
-            weighted_score_sum += (sum(score.values()) / len(score) if score else 0.0) * weight
+            # Standard handling for all other metrics
+            scores_dictionary[func_name] = score
+            times_dictionary[func_name] = round(time_taken * 1000)
+            weighted_score_sum += score * weight
     
     if total_weight > 0:
         net_score = weighted_score_sum / total_weight
     else:
         net_score = 0.0
             
-    scores_dictionary['net_score'] = round(net_score,2)
+    scores_dictionary['net_score'] = round(net_score, 2)
 
     concurrent_end_time = time.perf_counter()
-    times_dictionary["net_score_latency"] = round((concurrent_end_time - concurrent_start_time)*1000)
+    times_dictionary["net_score_latency"] = round((concurrent_end_time - concurrent_start_time) * 1000)
 
     for p in processes: p.join()
     
     if script_verbosity > 0:
         log_queue.put("[INFO] --- All processes have completed ---")
-    
     
     log_queue.put(None)
     logger.join()
