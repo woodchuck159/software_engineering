@@ -59,20 +59,41 @@ def parse_huggingface_url(url: str) -> Tuple[str, str, str]:
 
     return namespace, repo, rev
 
-def parse_hf_dataset_url_repo(url: str) -> str:
+from urllib.parse import urlparse
+
+from urllib.parse import urlparse
+
+def parse_dataset_url(url: str) -> str:
     """
-    Extract only the repo (dataset name) from a Hugging Face dataset URL.
-    Example: 
-        https://huggingface.co/datasets/stanfordnlp/imdb -> "imdb"
-        https://huggingface.co/datasets/glue -> "glue"
+    Parse a dataset URL and return the appropriate identifier for loading.
+    
+    - Hugging Face datasets: returns only the repo name
+        Example: 
+            https://huggingface.co/datasets/stanfordnlp/imdb -> "imdb"
+            https://huggingface.co/datasets/glue -> "glue"
+    
+    - GitHub repos: returns the full URL (used directly for git clone)
+        Example:
+            https://github.com/zalandoresearch/fashion-mnist -> "https://github.com/zalandoresearch/fashion-mnist"
+    
+    Raises:
+        ValueError: if the URL is not recognized.
     """
     parsed = urlparse(url)
-    parts = parsed.path.strip("/").split("/")
 
-    if len(parts) < 2 or parts[0] != "datasets":
-        raise ValueError(f"Invalid Hugging Face dataset URL: {url}")
+    # Hugging Face case
+    if "huggingface.co" in parsed.netloc:
+        parts = parsed.path.strip("/").split("/")
+        if len(parts) < 2 or parts[0] != "datasets":
+            raise ValueError(f"Invalid Hugging Face dataset URL: {url}")
+        return parts[-1]  # only the repo name, e.g. "imdb"
 
-    return parts[-1]   # last segment is always the repo
+    # GitHub case
+    if "github.com" in parsed.netloc:
+        return url  # keep full URL for git clone
+
+    raise ValueError(f"Unsupported dataset URL: {url}")
+    
 
 def parse_project_file(filepath: str) -> List[ProjectGroup]:
     """
